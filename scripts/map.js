@@ -67,7 +67,8 @@ Map.prototype.loadContext = function() {
             for (var i = 0; i < this.catches.length; i++) {
                 var pt = this.catches[i];
                 var icon = L.icon({ iconUrl: `./assets/pokemon/${pt.id}.png`, className: "pkmIcon", iconAnchor: [20, 20]});
-                var pkm = `${pt.name} (lvl ${pt.lvl}) <br /> Cp:${pt.cp} Iv:${pt.iv}%`;
+                //var pkm = `${pt.name} (lvl ${pt.lvl}) <br /> Cp:${pt.cp} Iv:${pt.iv}%`;
+                var pkm = `${pt.name} <br /> Cp:${pt.cp} Iv:${pt.iv}%`;
                 L.marker([pt.lat, pt.lng], {icon: icon, zIndexOffset: 100}).bindPopup(pkm).addTo(this.layerCatches);
             }
 
@@ -107,7 +108,15 @@ Map.prototype.addToPath = function(pt) {
 }
 
 Map.prototype.addCatch = function(pt) {
-    var pkm = `${pt.name} (lvl ${pt.lvl}) <br /> Cp:${pt.cp} Iv:${pt.iv}%`;
+    if (!pt.lat) {
+        if (this.steps.length <= 0) return;
+        var last = this.steps.pop();
+        pt.lat = last.lat;
+        pt.lng = last.lng;
+    }
+
+    //var pkm = `${pt.name} (lvl ${pt.lvl}) <br /> Cp:${pt.cp} Iv:${pt.iv}%`;
+    var pkm = `${pt.name}<br /> Cp:${pt.cp} Iv:${pt.iv}%`;
 
     this.catches.push(pt);
 

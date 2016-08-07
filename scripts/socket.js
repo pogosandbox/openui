@@ -20,6 +20,7 @@ function startListenToSocket() {
     }
 
     var socket = io.connect(global.config.websocket + "/event");
+    global.ws = socket;
     socket.on('connect', function() {
         console.log("Connected to Bot");
         global.connected = true;
@@ -54,8 +55,20 @@ function startListenToSocket() {
         });
         global.map.addPokestops(forts);
     });
-    socket.on('pokemon_found', function(msg) {
+    socket.on('pokemon_caught', function(msg) {
         console.log(msg);
+        var pokemon = JSON.parse(msg.pokemon);
+        var pkm = {
+            id: pokemon.pokemon_id,
+            name: inventory.getPokemonName(pokemon.pokemon_id),
+            cp: pokemon.combat_power,
+            iv: pokemon.potential * 100,
+            lvl: "?",
+            lat: 0,
+            lng: 0
+        };
+        global.map.addCatch(pkm);
+        pokemonToast(pkm, { ball: pokemon.pokeball });
     });
     socket.on('player_update', function(msg) {
         console.log(msg);

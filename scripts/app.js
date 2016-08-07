@@ -7,11 +7,6 @@
 
     document.title += " - " + global.version;
 
-    var wssend = function(obj) { 
-        var data = typeof(obj) != "object" ? obj : JSON.stringify(obj);
-        global.ws.send(data); 
-    };
-
     function confirmAndSendToServer(msg, callback) {
         vex.dialog.confirm({
             message: msg,
@@ -29,7 +24,7 @@
             if ($(".inventory").css("opacity") == "1" && $(".inventory .data .pokemon").length) {
                 $(".inventory").removeClass("active");
             } else {
-                wssend("PokemonList");
+                global.ws.emit("pokemon_list");
                 //ga("send", "event", "pokemonlist");
             }
         });
@@ -37,7 +32,7 @@
             if ($(".inventory").css("opacity") == "1" && $(".inventory .data .eggs").length) {
                 $(".inventory").removeClass("active");
             } else { 
-                wssend("EggsList");
+                global.ws.emit("eggs_list");
                 //ga("send", "event", "eggslist");
             }
         });
@@ -45,7 +40,7 @@
             if ($(".inventory").css("opacity") == "1" && $(".inventory .data .items").length) {
                 $(".inventory").removeClass("active");
             } else {
-                wssend("InventoryList");
+                global.ws.emit("inventory_list");
                 //ga("send", "event", "inventorylist");
             }
         });
@@ -83,10 +78,8 @@
             var transfer = $(this).parent();
             confirmAndSendToServer("Are you sure you want to transfer this Pokemon?", () => {
                 ga("send", "event", "transfer");
-                wssend({
-                    Command: "TransferPokemon",
-                    PokemonId: transfer.attr("id"),
-                    Data: transfer.attr("id")
+                global.ws.emit("transfer_pokemon", {
+                    id: transfer.attr("id")
                 });
                 transfer.parent().fadeOut();
             });
@@ -96,10 +89,8 @@
             var evolve = $(this).parent();
             confirmAndSendToServer("Are you sure you want to evolve this Pokemon?", () => {
                 ga("send", "event", "transfer");
-                wssend({
-                    Command: "EvolvePokemon",
-                    PokemonId: evolve.attr("id"),
-                    Data: evolve.attr("id")
+                global.ws.emit("evolve_pokemon", {
+                    id: evolve.attr("id")
                 });
                 $(".inventory").removeClass("active");
             });
