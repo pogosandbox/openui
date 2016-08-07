@@ -27,8 +27,8 @@ function startListenToSocket() {
         $(".loading").text("Waiting to get GPS coordinates from Bot..."); 
     });
     socket.on("bot_initialized", msg => {
-        console.log("bot_initialized");
         if (msg && msg.length > 0 && msg[0]) {
+            console.log("Bot Ready.");
             msg = msg[0];
             setUserName(msg.username);
             global.map.addToPath({ 
@@ -50,13 +50,13 @@ function startListenToSocket() {
             return {
                 id: f.fort_id,
                 lat: f.latitude,
-                lng: f.longitude
+                lng: f.longitude,
+                cooldown_timestamp_ms: f.cooldown_timestamp_ms
             }
         });
         global.map.addPokestops(forts);
     });
     socket.on('pokemon_caught', function(msg) {
-        console.log(msg);
         var pokemon = JSON.parse(msg.pokemon);
         var pkm = {
             id: pokemon.pokemon_id,
@@ -69,6 +69,9 @@ function startListenToSocket() {
         };
         global.map.addCatch(pkm);
         pokemonToast(pkm, { ball: pokemon.pokeball });
+    });
+    socket.on('pokemon_found', function(msg) {
+        console.log(msg);
     });
     socket.on('player_update', function(msg) {
         console.log(msg);

@@ -144,9 +144,12 @@ Map.prototype.addPokestops = function(forts) {
         var pt = forts[i];
         var ps = this.availablePokestops.find(ps => ps.id == pt.id);
         if (!ps) {
-            var icon = L.icon({ iconUrl: `./assets/img/pokestop_available.png`, iconSize: [30, 50]});
+            var iconurl = pt.cooldown_timestamp_ms != null  ? `./assets/img/pokestop.png` : `./assets/img/pokestop_available.png`;
+            var icon = L.icon({ iconUrl: iconurl, iconSize: [30, 50]});
             pt.marker = L.marker([pt.lat, pt.lng], {icon: icon, zIndexOffset: 50}).addTo(this.layerPokestops);
             this.availablePokestops.push(pt);
+        } else if (ps.cooldown_timestamp_ms != null) {
+            ps.marker.setIcon(L.icon({ iconUrl: `./assets/img/pokestop.png`, iconSize: [30, 50]}));
         }
     }
 }
