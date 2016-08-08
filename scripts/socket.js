@@ -27,7 +27,7 @@ function startListenToSocket() {
         $(".loading").text("Waiting to get GPS coordinates from Bot..."); 
     });
     socket.on("bot_initialized", msg => {
-        console.log(msg)
+        //console.log(msg)
         if (Array.isArray(msg)) msg = msg.length > 0 ? msg[0] : {};
         if (msg.username) {
             console.log("Bot Ready.");
@@ -72,12 +72,12 @@ function startListenToSocket() {
         });
     });
     socket.on('pokemon_caught', msg => {
-        var pokemon = JSON.parse(msg.pokemon);
+        var pokemon = msg.pokemon;
         var pkm = {
             id: pokemon.pokemon_id,
             name: inventory.getPokemonName(pokemon.pokemon_id),
             cp: pokemon.combat_power,
-            iv: pokemon.potential * 100,
+            iv: (pokemon.potential * 100).toFixed(1),
             lvl: "?",
             lat: 0,
             lng: 0
@@ -87,8 +87,6 @@ function startListenToSocket() {
     });
     socket.on("transfer_pokemon", msg => {
         //console.log(msg)
-        console.log("transfer_pokemon");
-        console.log(msg);
     });
     socket.on("inventory_list", msg => {
         var items = Array.from(Object.keys(msg.inventory).filter(k => k != "count"), item => {
@@ -102,11 +100,11 @@ function startListenToSocket() {
         global.map.displayInventory(items);
     });
     socket.on("pokemon_list", msg => {
-        console.log(msg);
+        //console.log(msg);
         var pkm = Array.from(msg.pokemon, p => {
             var pkmInfo = global.pokemonSettings[p.pokemon_id - 1];
             return {
-                id: p.id || p.unique_id,
+                id: p.unique_id,
                 pokemonId: p.pokemon_id,
                 inGym: p.deployed_fort_id != null,
                 canEvolve: pkmInfo && pkmInfo.EvolutionIds.length > 0,
@@ -130,7 +128,8 @@ function startListenToSocket() {
                 doneDist: msg.km_walked - i.start_km_walked
             }
         });
-        var eggs = Array.from(msg.eggs, i => {
+        var eggsInIncub = Array.from(msg.egg_incubators, i => i.pokemon_id);
+        var eggs = Array.from(msg.eggs.filter(e => eggsInIncub.indexOf(e.unique_id) < 0), i => {
             return {
                 type: "egg",
                 totalDist: i.total_distance,

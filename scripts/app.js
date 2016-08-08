@@ -14,7 +14,7 @@
     document.title += " - " + global.version;
 
     function confirmAndSendToServer(msg, callback) {
-        if (!global.noConfirm) {
+        if (!global.config.noConfirm) {
             vex.dialog.confirm({
                 message: msg,
                 callback: function(value) {
