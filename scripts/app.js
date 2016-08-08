@@ -1,5 +1,11 @@
 (function() {
-    var global = { snipping: false };
+    var global = { 
+        storage: {
+            items: 350,
+            pokemon: 250
+        },
+        snipping: false
+    };
     window.global = global;
  
     global.config = window.configService.load();
@@ -25,7 +31,6 @@
                 $(".inventory").removeClass("active");
             } else {
                 global.ws.emit("pokemon_list");
-                //ga("send", "event", "pokemonlist");
             }
         });
         $("#eggsLink").click( function() {
@@ -33,7 +38,6 @@
                 $(".inventory").removeClass("active");
             } else { 
                 global.ws.emit("eggs_list");
-                //ga("send", "event", "eggslist");
             }
         });
         $("#inventoryLink").click( function() {
@@ -41,7 +45,6 @@
                 $(".inventory").removeClass("active");
             } else {
                 global.ws.emit("inventory_list");
-                //ga("send", "event", "inventorylist");
             }
         });
 

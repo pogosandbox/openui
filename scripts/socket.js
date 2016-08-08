@@ -21,15 +21,15 @@ function startListenToSocket() {
 
     var socket = io.connect(global.config.websocket + "/event");
     global.ws = socket;
-    socket.on('connect', function() {
+    socket.on('connect', () => {
         console.log("Connected to Bot");
         global.connected = true;
         $(".loading").text("Waiting to get GPS coordinates from Bot..."); 
     });
     socket.on("bot_initialized", msg => {
-        if (msg && msg.length > 0 && msg[0]) {
+        if (Array.isArray(msg)) msg = msg.length > 0 ? msg[0] : {};
+        if (msg.username) {
             console.log("Bot Ready.");
-            msg = msg[0];
             setUserName(msg.username);
             global.map.addToPath({ 
                 lat: msg.coordinates[0], 
@@ -37,7 +37,7 @@ function startListenToSocket() {
             });
         }
     });
-    socket.on('position', function(msg) {
+    socket.on('position', msg => {
         if (!global.snipping) {
             global.map.addToPath({ 
                 lat: msg.coordinates[0], 
@@ -45,7 +45,7 @@ function startListenToSocket() {
             });
         }
     });
-    socket.on('pokestops', function(msg) {
+    socket.on('pokestops', msg => {
         var forts = Array.from(msg.pokestops.filter(f => f.fort_type == 1), f => {
             return {
                 id: f.fort_id,
@@ -56,7 +56,7 @@ function startListenToSocket() {
         });
         global.map.addPokestops(forts);
     });
-    socket.on('pokemon_caught', function(msg) {
+    socket.on('pokemon_caught', msg => {
         var pokemon = JSON.parse(msg.pokemon);
         var pkm = {
             id: pokemon.pokemon_id,
@@ -70,13 +70,43 @@ function startListenToSocket() {
         global.map.addCatch(pkm);
         pokemonToast(pkm, { ball: pokemon.pokeball });
     });
-    socket.on('pokemon_found', function(msg) {
+    socket.on("inventory_list", msg => {
+        var items = Array.from(Object.keys(msg.inventory).filter(k => k != "count"), item => {
+            var itemid = parseInt(item);
+            return {
+                item_id: itemid,
+                name: inventory.getItemName(itemid),
+                count: msg.inventory[item]
+            }
+        });
+        global.map.displayInventory(items);
+    });
+    socket.on("pokemon_list", msg => {
         console.log(msg);
     });
-    socket.on('player_update', function(msg) {
+    socket.on("eggs_list", msg => {
+        var incubators = msg.egg_incubators.filter(i => i.target_km_walked != 0 || i.start_km_walked != 0);
+         incubators = Array.from(incubators, i => { 
+            msg.km_walked = msg.km_walked || 0;
+            return {
+                type: i.item_id == 901 ? "incubator-unlimited" : "incubator",
+                totalDist: i.target_km_walked - i.start_km_walked,
+                doneDist: msg.km_walked - i.start_km_walked
+            }
+        });
+        var eggs = Array.from(msg.eggs, i => {
+            return {
+                type: "egg",
+                totalDist: i.total_distance,
+                doneDist: i.walked_distance
+            }
+        });
+        global.map.displayEggsList(incubators.concat(eggs));
+    });
+    socket.on('pokemon_found', msg => {
         console.log(msg);
     });
-    socket.on('inventory_update', function(msg) {
+    socket.on('player_update', msg => {
         console.log(msg);
     });
 }
@@ -149,15 +179,15 @@ function riendutout() {
                     lng: msg.Longitude
                 });
             }
-        } else if (command.indexOf("PokeStopListEvent") >= 0) {
-            var forts = Array.from(msg.Forts.$values.filter(f => f.Type == 1), f => {
-                return {
-                    id: f.Id,
-                    lat: f.Latitude,
-                    lng: f.Longitude
-                }
-            });
-            global.map.addPokestops(forts);
+        // } else if (command.indexOf("PokeStopListEvent") >= 0) {
+        //     var forts = Array.from(msg.Forts.$values.filter(f => f.Type == 1), f => {
+        //         return {
+        //             id: f.Id,
+        //             lat: f.Latitude,
+        //             lng: f.Longitude
+        //         }
+        //     });
+        //     global.map.addPokestops(forts);
         } else if (command.indexOf("SnipeModeEvent") >= 0) {
             if (msg.Active) console.log("Sniper Mode");
             global.snipping = msg.Active;
@@ -179,36 +209,36 @@ function riendutout() {
                 }
             });
             global.map.displayPokemonList(pkm);
-        } else if (command.indexOf("EggsListEvent") >= 0) {
-            var incubators = Array.from(msg.Incubators.$values, i => {
-                if (i.TargetKmWalked != 0 || i.StartKmWalked != 0) {
-                    msg.PlayerKmWalked = msg.PlayerKmWalked || 0;
-                    return {
-                        type: i.ItemId == 901 ? "incubator-unlimited" : "incubator",
-                        totalDist: i.TargetKmWalked - i.StartKmWalked,
-                        doneDist: msg.PlayerKmWalked - i.StartKmWalked
-                    }
-                }
-            });
-            var eggs = Array.from(msg.UnusedEggs.$values, i => {
-                return {
-                    type: "egg",
-                    totalDist: i.EggKmWalkedTarget,
-                    doneDist: i.EggKmWalkedStart
-                }
-            });
-            global.map.displayEggsList(incubators.concat(eggs));
-        } else if (command.indexOf("InventoryListEvent") >= 0) {
-            console.log(msg);
-            var items = Array.from(msg.Items.$values, item => {
-                return {
-                    name: inventory.getItemName(item.ItemId),
-                    itemId: item.ItemId,
-                    count: item.Count,
-                    unseen: item.Unseen
-                }
-            });
-            global.map.displayInventory(items);
+        // } else if (command.indexOf("EggsListEvent") >= 0) {
+        //     var incubators = Array.from(msg.Incubators.$values, i => {
+        //         if (i.TargetKmWalked != 0 || i.StartKmWalked != 0) {
+        //             msg.PlayerKmWalked = msg.PlayerKmWalked || 0;
+        //             return {
+        //                 type: i.ItemId == 901 ? "incubator-unlimited" : "incubator",
+        //                 totalDist: i.TargetKmWalked - i.StartKmWalked,
+        //                 doneDist: msg.PlayerKmWalked - i.StartKmWalked
+        //             }
+        //         }
+        //     });
+        //     var eggs = Array.from(msg.UnusedEggs.$values, i => {
+        //         return {
+        //             type: "egg",
+        //             totalDist: i.EggKmWalkedTarget,
+        //             doneDist: i.EggKmWalkedStart
+        //         }
+        //     });
+        //     global.map.displayEggsList(incubators.concat(eggs));
+        // } else if (command.indexOf("InventoryListEvent") >= 0) {
+        //     console.log(msg);
+        //     var items = Array.from(msg.Items.$values, item => {
+        //         return {
+        //             name: inventory.getItemName(item.ItemId),
+        //             itemId: item.ItemId,
+        //             count: item.Count,
+        //             unseen: item.Unseen
+        //         }
+        //     });
+        //     global.map.displayInventory(items);
         } else if (command.indexOf("PokemonEvolveEvent") >= 0) {
             var pkm = {
                 id: msg.Id,

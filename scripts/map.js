@@ -66,7 +66,7 @@ Map.prototype.loadContext = function() {
 
             for (var i = 0; i < this.catches.length; i++) {
                 var pt = this.catches[i];
-                var icon = L.icon({ iconUrl: `./assets/pokemon/${pt.id}.png`, className: "pkmIcon", iconAnchor: [20, 20]});
+                var icon = L.icon({ iconUrl: `./assets/pokemon/${pt.id}.png`, iconSize: [50, 50], iconAnchor: [20, 20]});
                 //var pkm = `${pt.name} (lvl ${pt.lvl}) <br /> Cp:${pt.cp} Iv:${pt.iv}%`;
                 var pkm = `${pt.name} <br /> Cp:${pt.cp} Iv:${pt.iv}%`;
                 L.marker([pt.lat, pt.lng], {icon: icon, zIndexOffset: 100}).bindPopup(pkm).addTo(this.layerCatches);
@@ -120,7 +120,7 @@ Map.prototype.addCatch = function(pt) {
 
     this.catches.push(pt);
 
-    var icon = L.icon({ iconUrl: `./assets/pokemon/${pt.id}.png`, className: "pkmIcon", iconAnchor: [25, 25] });
+    var icon = L.icon({ iconUrl: `./assets/pokemon/${pt.id}.png`, iconSize: [50, 50], iconAnchor: [25, 25] });
     L.marker([pt.lat, pt.lng], {icon: icon, zIndexOffset: 100 }).bindPopup(pkm).addTo(this.layerCatches);
 }
 
@@ -216,7 +216,7 @@ Map.prototype.displayEggsList = function(eggs) {
 Map.prototype.displayInventory = function(items) {
     console.log("Inventory list");
     $(".inventory .sort").hide();
-    var count = items.filter(i => i.itemId != 901).reduce((prev, cur) => prev + cur.count, 0);
+    var count = items.filter(i => i.item_id != 901).reduce((prev, cur) => prev + cur.count, 0);
     $(".inventory .numberinfo").text(`${count}/${global.storage.items}`);
     var div = $(".inventory .data")
     div.html(``);
@@ -224,7 +224,7 @@ Map.prototype.displayInventory = function(items) {
         div.append(`
             <div class="items">
                 <span>x${elt.count}</span>
-                <span class="imgspan"><img src="./assets/inventory/${elt.itemId}.png" /></span>
+                <span class="imgspan"><img src="./assets/inventory/${elt.item_id}.png" /></span>
                 <span class="info">${elt.name}</span>
             </div>
         `);
