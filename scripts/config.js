@@ -17,7 +17,8 @@
         locale: "en",
         websocket: "http://localhost:8000",
         followPlayer: false,
-        noPopup: false
+        noPopup: false,
+        noConfirm: false
     };
 
     var service = {};

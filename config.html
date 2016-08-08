@@ -28,6 +28,7 @@
             appconfig.websocket = $("#txtWebSocket").val();
             appconfig.followPlayer = $("#chkFollowPlayer").prop("checked") || false;
             appconfig.noPopup = $("#chkNoPopup").prop("checked") || false;
+            appconfig.noConfirm = $("#chkNoConfirm").prop("checked") || false;
 
             window.configService.save(appconfig);
             navigateAway();
@@ -42,6 +43,7 @@
             $("#txtWebSocket").val(appconfig.websocket);
             $("#chkFollowPlayer").prop('checked', appconfig.followPlayer || false);
             $("#chkNoPopup").prop('checked', appconfig.noPopup || false);
+            $("#chkNoConfirm").prop('checked', appconfig.noConfirm || false);
 
             $("#saveBtn").click(saveConfig);
             $("#cancelBtn").click(navigateAway);
@@ -65,9 +67,10 @@
                     </select>
                 </li>
                 <li>
-                    <label>Map options</label>
+                    <label>Options</label>
                     <div><input type="checkbox" id="chkFollowPlayer" class="field-comon" /><span>Follow player on map</span></div>
                     <div><input type="checkbox" id="chkNoPopup" class="field-comon" /><span>Disable popups</span></div>
+                    <div><input type="checkbox" id="chkNoConfirm" class="field-comon" /><span>Don't show confirm dialog when transfer/evolve</span></div>
                 </li>
                 <li>
                     <label>Bot Websocket</label>

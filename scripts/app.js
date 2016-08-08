@@ -14,12 +14,16 @@
     document.title += " - " + global.version;
 
     function confirmAndSendToServer(msg, callback) {
-        vex.dialog.confirm({
-            message: msg,
-            callback: function(value) {
-                if(value) callback();
-            }
-        });
+        if (!global.noConfirm) {
+            vex.dialog.confirm({
+                message: msg,
+                callback: function(value) {
+                    if(value) callback();
+                }
+            });
+        } else {
+            callback();
+        }
     }
 
     $(function() {
