@@ -7,7 +7,6 @@ function setUserName(user) {
     }
 }
 
-//localStorage.debug = 'socket.io-client:socket';
 function startListenToSocket() {
     inventory.init(global.config.locale);
     console.log("Connecting to " + global.config.websocket);
@@ -21,12 +20,14 @@ function startListenToSocket() {
 
     var socket = io.connect(global.config.websocket + "/event");
     global.ws = socket;
+
     socket.on('connect', () => {
         console.log("Connected to Bot");
         global.connected = true;
         $(".loading").text("Waiting to get GPS coordinates from Bot..."); 
     });
     socket.on("bot_initialized", msg => {
+        console.log(msg)
         if (Array.isArray(msg)) msg = msg.length > 0 ? msg[0] : {};
         if (msg.username) {
             console.log("Bot Ready.");
@@ -60,6 +61,14 @@ function startListenToSocket() {
         });
         global.map.addPokestops(forts);
     });
+    socket.on('pokestop_visited', msg => {
+        global.map.addVisitedPokestop({
+            id: msg.fort_id,
+            name: "",
+            lat: msg.latitude,
+            lng: msg.longitude
+        });
+    });
     socket.on('pokemon_caught', msg => {
         var pokemon = JSON.parse(msg.pokemon);
         var pkm = {
@@ -73,6 +82,11 @@ function startListenToSocket() {
         };
         global.map.addCatch(pkm);
         pokemonToast(pkm, { ball: pokemon.pokeball });
+    });
+    socket.on("transfer_pokemon", msg => {
+        //console.log(msg)
+        console.log("transfer_pokemon");
+        console.log(msg);
     });
     socket.on("inventory_list", msg => {
         var items = Array.from(Object.keys(msg.inventory).filter(k => k != "count"), item => {
@@ -143,49 +157,12 @@ function notimplementedyet() {
                 return elt;
             })
             localStorage.setItem("pokemonSettings", JSON.stringify(global.pokemonSettings));
-        } else if (command.indexOf("FortUsedEvent") >= 0) {
-            //console.log(msg);
-            if (msg.Latitude && msg.Longitude) {
-                global.map.addVisitedPokestop({
-                    id: msg.Id,
-                    name: msg.Name,
-                    lat: msg.Latitude,
-                    lng: msg.Longitude
-                });
-            }
-
         } else if (command.indexOf("PokemonEvolveEvent") >= 0) {
             var pkm = {
                 id: msg.Id,
                 name: inventory.getPokemonName(msg.Id)
             };
             pokemonToast(pkm, { title: "A Pokemon Evolved" });
-        } else if (command.indexOf("TransferPokemonEvent") >= 0) {
-            // nothing
-        } else if (command.indexOf("FortTargetEvent") >= 0) {
-            // nothing
-        } else if (command.indexOf("NoticeEvent") >= 0) {
-            // nothing
-        } else if (command.indexOf("WarnEvent") >= 0) {
-            // nothing
-        } else if (command.indexOf("SnipeScanEvent") >= 0) {
-            // nothing
-        } else if (command.indexOf("ItemRecycledEvent") >= 0) {
-            // nothing
-        } else if (command.indexOf("EvolveCountEvent") >= 0) {
-            // nothing
-        } else if (command.indexOf("DebugEvent") >= 0) {
-            // nothing
-        } else if (command.indexOf("SnipeEvent") >= 0) {
-            // nothing
-        } else if (command.indexOf("EggIncubatorStatusEvent") >= 0) {
-            // nothing
-        } else if (command.indexOf("iconAnchor") >= 0) {
-            // nothing
-        } else if (command.indexOf("ErrorEvent") >= 0) {
-            console.log(msg.Message);
-        } else {
-            console.log(msg);
         }
     };
 }

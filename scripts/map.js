@@ -82,7 +82,7 @@ Map.prototype.initPath = function() {
 
     if (!this.me) {
         this.map.setView([this.steps[0].lat, this.steps[0].lng], 16);
-        this.me = L.marker([this.steps[0].lat, this.steps[0].lng], { zIndexOffset: 200 }).addTo(this.map).bindPopup(`${this.steps[0].lat},${this.steps[0].lng}`);
+        this.me = L.marker([this.steps[0].lat, this.steps[0].lng], { zIndexOffset: 200 }).addTo(this.map).bindPopup(`${this.steps[0].lat.toFixed(4)},${this.steps[0].lng.toFixed(4)}`);
         $(".loading").hide();
     }
 
@@ -100,7 +100,7 @@ Map.prototype.addToPath = function(pt) {
     if (this.initPath()) {
         var latLng = L.latLng(pt.lat, pt.lng);
         this.path.addLatLng(latLng);
-        this.me.setLatLng(latLng).getPopup().setContent(`${pt.lat},${pt.lng}`);
+        this.me.setLatLng(latLng).getPopup().setContent(`${pt.lat.toFixed(4)},${pt.lng.toFixed(4)}`);
         if (global.config.followPlayer) {
             this.map.panTo(latLng, true);
         }
@@ -116,7 +116,7 @@ Map.prototype.addCatch = function(pt) {
     }
 
     //var pkm = `${pt.name} (lvl ${pt.lvl}) <br /> Cp:${pt.cp} Iv:${pt.iv}%`;
-    var pkm = `${pt.name}<br /> Cp:${pt.cp} Iv:${pt.iv}%`;
+    var pkm = `${pt.name}<br /> CP:${pt.cp} IV:${pt.iv}%`;
 
     this.catches.push(pt);
 
@@ -132,10 +132,12 @@ Map.prototype.addVisitedPokestop = function(pt) {
     var ps = this.availablePokestops.find(ps => ps.id == pt.id);
     if (ps) {
         ps.marker.setIcon(L.icon({ iconUrl: `./assets/img/pokestop.png`, iconSize: [30, 50]}));
-        ps.marker.bindPopup(pt.name);
+        if (pt.name) ps.marker.bindPopup(pt.name);
     } else {
         var icon = L.icon({ iconUrl: `./assets/img/pokestop.png`, iconSize: [30, 50]});
-        L.marker([pt.lat, pt.lng], {icon: icon, zIndexOffset: 50}).bindPopup(pt.name).addTo(this.layerPokestops);
+        var marker = L.marker([pt.lat, pt.lng], {icon: icon, zIndexOffset: 50});
+        if (pt.name) marker.bindPopup(pt.name);
+        marker.addTo(this.layerPokestops);
     }
 }
 
