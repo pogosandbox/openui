@@ -32,9 +32,11 @@ function startListenToSocket() {
         if (msg.username) {
             console.log("Bot Ready.");
             setUserName(msg.username);
-            global.storage = {
-                pokemon: msg.storage.max_pokemon_storage,
-                items: msg.storage.max_item_storage
+            if (msg.storage) {
+                global.storage = {
+                    pokemon: msg.storage.max_pokemon_storage,
+                    items: msg.storage.max_item_storage
+                }
             }
             global.map.addToPath({
                 lat: msg.coordinates[0],
@@ -104,7 +106,7 @@ function startListenToSocket() {
         var pkm = Array.from(msg.pokemon, p => {
             var pkmInfo = global.pokemonSettings[p.pokemon_id - 1];
             return {
-                id: p.unique_id,
+                id: p.id || p.unique_id,
                 pokemonId: p.pokemon_id,
                 inGym: p.deployed_fort_id != null,
                 canEvolve: pkmInfo && pkmInfo.EvolutionIds.length > 0,
