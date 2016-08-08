@@ -31,9 +31,13 @@ function startListenToSocket() {
         if (msg.username) {
             console.log("Bot Ready.");
             setUserName(msg.username);
-            global.map.addToPath({ 
-                lat: msg.coordinates[0], 
-                lng: msg.coordinates[1] 
+            global.storage = {
+                pokemon: msg.storage.max_pokemon_storage,
+                items: msg.storage.max_item_storage
+            }
+            global.map.addToPath({
+                lat: msg.coordinates[0],
+                lng: msg.coordinates[1]
             });
         }
     });
@@ -139,16 +143,6 @@ function notimplementedyet() {
                 return elt;
             })
             localStorage.setItem("pokemonSettings", JSON.stringify(global.pokemonSettings));
-        } else if (command.indexOf("ProfileEvent") >= 0) {
-            // once connected, ask for pokemon settings
-            var username = msg.Profile.PlayerData.Username;
-            global.username = username;
-            global.storage = {
-                pokemon: msg.Profile.PlayerData.MaxPokemonStorage,
-                items: msg.Profile.PlayerData.MaxItemStorage
-            }
-            document.title = `[${username}] ${document.title}`;
-            ws.send(JSON.stringify({ Command: "GetPokemonSettings" }));
         } else if (command.indexOf("FortUsedEvent") >= 0) {
             //console.log(msg);
             if (msg.Latitude && msg.Longitude) {
