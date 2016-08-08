@@ -5,4 +5,4 @@ Needs node.js to launch locally, available at http://openui.nicontoso.eu.
 
 ## How to
 
-The web plugin has to be enabled.
+The 'socket' plugin has to be enabled, the 'web' plugin should be deactivated.
