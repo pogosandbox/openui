@@ -223,6 +223,10 @@ body, html, .content {
   .pokemon:hover .transfer img {
     opacity: 1; }
 
+.refresh {
+  position: absolute;
+  right: 50px; }
+
 .close {
   position: absolute;
   right: 10px; }
