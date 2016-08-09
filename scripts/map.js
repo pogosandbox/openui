@@ -199,6 +199,7 @@ Map.prototype.displayPokemonList = function(all, sortBy) {
 
 Map.prototype.displayEggsList = function(eggs) {
     console.log("Eggs list");
+    console.log(eggs);
     global.active = "eggs";
     $(".inventory .sort").hide();
     $(".inventory .numberinfo").text(eggs.length + "/9");
