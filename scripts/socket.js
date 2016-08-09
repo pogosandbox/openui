@@ -78,15 +78,28 @@ function startListenToSocket() {
             name: inventory.getPokemonName(pokemon.pokemon_id),
             cp: pokemon.combat_power,
             iv: (pokemon.potential * 100).toFixed(1),
-            lvl: "?",
+            lvl: "",
             lat: 0,
             lng: 0
         };
+        if (msg.position) {
+            pkm.lat = msg.position.latitude;
+            pkm.lng = msg.position.longitude;
+        }
         global.map.addCatch(pkm);
         pokemonToast(pkm, { ball: pokemon.pokeball });
     });
-    socket.on("transfer_pokemon", msg => {
+    socket.on("transfered_pokemon", msg => {
         //console.log(msg)
+    });
+    socket.on("pokemon_evolved", msg => {
+        //console.log(msg);
+        var info = {
+            id: msg.evolution,
+            name: inventory.getPokemonName(msg.evolution)
+        };
+        var from = inventory.getPokemonName(msg.pokemon.pokemon_id)
+        pokemonToast(info, { title: `A ${from} Evolved` });
     });
     socket.on("inventory_list", msg => {
         var items = Array.from(Object.keys(msg.inventory).filter(k => k != "count"), item => {
@@ -158,12 +171,6 @@ function notimplementedyet() {
                 return elt;
             })
             localStorage.setItem("pokemonSettings", JSON.stringify(global.pokemonSettings));
-        } else if (command.indexOf("PokemonEvolveEvent") >= 0) {
-            var pkm = {
-                id: msg.Id,
-                name: inventory.getPokemonName(msg.Id)
-            };
-            pokemonToast(pkm, { title: "A Pokemon Evolved" });
         }
     };
 }
