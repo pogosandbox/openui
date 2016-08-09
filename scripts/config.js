@@ -21,7 +21,7 @@
         noConfirm: false,
         memory: {
             limit: true,
-            maxCaught: 5, // 35 ?
+            maxCaught: 50,
             mathPath: 10000,
             visitedPokestops: 250
         }

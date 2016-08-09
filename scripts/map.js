@@ -74,8 +74,9 @@ Map.prototype.initPath = function() {
     if (this.path != null) return true;
 
     if (!this.me) {
-        this.map.setView([this.steps[0].lat, this.steps[0].lng], 16);
-        this.me = L.marker([this.steps[0].lat, this.steps[0].lng], { zIndexOffset: 200 }).addTo(this.map).bindPopup(`${this.steps[0].lat.toFixed(4)},${this.steps[0].lng.toFixed(4)}`);
+        var last = this.steps[this.steps.length - 1];
+        this.map.setView([last.lat, last.lng], 16);
+        this.me = L.marker([last.lat, last.lng], { zIndexOffset: 200 }).addTo(this.map).bindPopup(`${last.lat.toFixed(4)},${last.lng.toFixed(4)}`);
         $(".loading").hide();
     }
 
@@ -100,6 +101,12 @@ Map.prototype.initCatches = function() {
 
 Map.prototype.addToPath = function(pt) {
     this.steps.push(pt);
+    if (global.config.memory.limit && this.steps.length > global.config.memory.mathPath) {
+        this.layerPath.clearLayers();
+        this.path = null;
+        var max = Math.floor(global.config.memory.mathPath * 0.7);
+        this.steps = this.steps.slice(-max);
+    }
     if (this.initPath()) {
         var latLng = L.latLng(pt.lat, pt.lng);
         this.path.addLatLng(latLng);
@@ -113,7 +120,7 @@ Map.prototype.addToPath = function(pt) {
 Map.prototype.addCatch = function(pt) {
     if (!pt.lat) {
         if (this.steps.length <= 0) return;
-        var last = this.steps.pop();
+        var last = this.steps[this.steps.length - 1];
         pt.lat = last.lat;
         pt.lng = last.lng;
     }
