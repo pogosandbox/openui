@@ -132,6 +132,7 @@ function startListenToSocket() {
         global.map.displayPokemonList(pkm);
     });
     socket.on("eggs_list", msg => {
+        console.log(msg);
         var incubators = msg.egg_incubators.filter(i => i.target_km_walked != 0 || i.start_km_walked != 0);
          incubators = Array.from(incubators, i => { 
             msg.km_walked = msg.km_walked || 0;
