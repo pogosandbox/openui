@@ -21,24 +21,9 @@
     <script>
         var appconfig =  window.configService.load();
 
-        function saveConfig() {
-            if (appconfig.websocket != $("#txtWebSocket").val()) {
-                // clean context if url is changed (change bot ?)
-                sessionStorage.setItem("available", false)
-            } 
-
-            appconfig.locale = $("#slLocale").val();
-            appconfig.websocket = $("#txtWebSocket").val();
-            appconfig.followPlayer = $("#chkFollowPlayer").prop("checked") || false;
-            appconfig.noPopup = $("#chkNoPopup").prop("checked") || false;
-            appconfig.noConfirm = $("#chkNoConfirm").prop("checked") || false;
-
-            window.configService.save(appconfig);
-            navigateAway();
-        }
-
-        $(function() {
-            $("#backBtn").click(() => { window.location = "/"; });
+        function init() {
+            // Config
+            $("#debug-config").html(JSON.stringify(appconfig));
 
             // Session
             $("#debug-session").html("");
@@ -57,6 +42,27 @@
                 var value = localStorage.getItem(key);
                 $("#debug-local").append(`<div>${key}</div><div>${value}</div>`);
             }
+        }
+
+        $(function() {
+            $("#backBtn").click(() => { window.location = "/"; });
+
+            $("#clearBtn").click(() => {
+                var i = sessionStorage.length;
+                while(i--) {
+                    var key = sessionStorage.key(i);
+                    sessionStorage.removeItem(key);
+                }  
+                i = localStorage.length;
+                while(i--) {
+                    var key = localStorage.key(i);
+                    localStorage.removeItem(key);
+                }
+
+                init();
+            });
+
+            init();
         });
     </script>    
   </head>
@@ -66,6 +72,13 @@
         <div class="row">
             <div class="col s12 m10 offset-m1 l8 offset-l2">
                 <h3 class="center-align">Debug Tool</h3>
+
+                <div class="col s12">
+                    <h5>Config</h5>
+                </div>
+                <div class="col s12">
+                    <div id="debug-config"></div>
+                </div>
 
                 <div class="col s12">
                     <h5>Session Storage</h5>
@@ -82,7 +95,8 @@
                 </div>
 
                 <div class="input-field col s12">
-                    <a id="backBtn" class="waves-effect waves-light btn">Back</a>
+                    <a id="backBtn" class="waves-effect waves-light btn"><i class="material-icons left">arrow_back</i>Back</a>
+                    <a id="clearBtn" class="waves-effect waves-light btn"><i class="material-icons left">delete</i>clear all</a>
                 </div>
             </div>
         </div>
