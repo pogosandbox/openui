@@ -1,18 +1,5 @@
 $white: #fff;
 
-@font-face {
-  font-family: 'Roboto';
-  font-style: normal;
-  font-weight: 400;
-  src: local('Roboto'), local('Roboto'), url(../fonts/Roboto-Regular.ttf) format('truetype');
-}
-@font-face {
-  font-family: 'Roboto';
-  font-style: bold;
-  font-weight: 500;
-  src: local('Roboto'), local('Roboto'), url(../fonts/Roboto-Medium.ttf) format('truetype');
-}
-
 body, html, .content {
     font-family: Roboto;
     font-weight: 400;
