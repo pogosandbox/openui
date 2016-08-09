@@ -203,17 +203,15 @@ Map.prototype.displayEggsList = function(eggs) {
     global.active = "eggs";
     $(".inventory .sort").hide();
     $(".inventory .numberinfo").text(eggs.length + "/9");
-    var div = $(".inventory .data")
+    var div = $(".inventory .data");
     div.html("");
     eggs.forEach(function(elt) {
-        if (elt) {
-            div.append(`
-                <div class="eggs">
-                    <span class="imgspan"><img src="./assets/inventory/${elt.type}.png" /></span>
-                    <span>${elt.doneDist.toFixed(1)} / ${elt.totalDist.toFixed(1)} km</span>
-                </div>
-            `);
-        }
+        div.append(`
+            <div class="eggs">
+                <span class="imgspan"><img src="./assets/inventory/${elt.type}.png" /></span>
+                <span>${elt.doneDist.toFixed(1)} / ${elt.totalDist.toFixed(1)} km</span>
+            </div>
+        `);
     });
     $(".inventory").show().addClass("active");
 }
