@@ -65,10 +65,10 @@ function startListenToSocket() {
     });
     socket.on('pokestop_visited', msg => {
         global.map.addVisitedPokestop({
-            id: msg.fort_id,
+            id: msg.pokestop.fort_id,
             name: "",
-            lat: msg.latitude,
-            lng: msg.longitude
+            lat: msg.pokestop.latitude,
+            lng: msg.pokestop.longitude
         });
     });
     socket.on('pokemon_caught', msg => {
