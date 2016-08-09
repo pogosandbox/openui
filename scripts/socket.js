@@ -58,7 +58,7 @@ function startListenToSocket() {
                 id: f.fort_id,
                 lat: f.latitude,
                 lng: f.longitude,
-                cooldown_timestamp_ms: f.cooldown_timestamp_ms
+                visited: f.cooldown_timestamp_ms != null
             }
         });
         global.map.addPokestops(forts);
@@ -68,7 +68,8 @@ function startListenToSocket() {
             id: msg.pokestop.fort_id,
             name: "",
             lat: msg.pokestop.latitude,
-            lng: msg.pokestop.longitude
+            lng: msg.pokestop.longitude,
+            visited: true
         });
     });
     socket.on('pokemon_caught', msg => {
@@ -113,7 +114,7 @@ function startListenToSocket() {
         global.map.displayInventory(items);
     });
     socket.on("pokemon_list", msg => {
-        //console.log(msg);
+        console.log(msg);
         var pkm = Array.from(msg.pokemon, p => {
             var pkmInfo = global.pokemonSettings[p.pokemon_id - 1];
             return {
@@ -129,7 +130,7 @@ function startListenToSocket() {
                 favorite: p.favorite != 0
             }
         });
-        global.map.displayPokemonList(pkm);
+        global.map.displayPokemonList(pkm, null, msg.eggs_count);
     });
     socket.on("eggs_list", msg => {
         var incubators = msg.egg_incubators.filter(i => i.target_km_walked != 0 || i.start_km_walked != 0);
