@@ -18,7 +18,13 @@
         websocket: "http://localhost:8000",
         followPlayer: false,
         noPopup: false,
-        noConfirm: false
+        noConfirm: false,
+        memory: {
+            limit: true,
+            maxCaught: 5, // 35 ?
+            mathPath: 10000,
+            visitedPokestops: 250
+        }
     };
 
     var service = {};
@@ -44,6 +50,10 @@
                 config = JSON.parse(fs.readFileSync(configfile, 'utf-8')); 
                 config = Object.assign({}, defaultConfig, config);
                 config.version = version;
+
+                if (config.websocket.startsWith("ws")) config.websocket = defaultConfig.websocket;
+                // no ui, so force memory settings
+                config.memory = defaultConfig.memory;
             } catch(err) {
                 configService.save(defaultConfig);
             }
@@ -66,6 +76,9 @@
             }
 
             config.version = "online";
+
+            // no ui, so force memory settings
+            config.memory = defaultConfig.memory;
 
             return config;
         }

@@ -36,7 +36,6 @@ var Map = function(parentDiv) {
     this.steps = [];
     this.catches = [];
     this.pokestops = [];
-    this.availablePokestops = [];
     this.pokemonList = [];
 };
 
@@ -64,13 +63,7 @@ Map.prototype.loadContext = function() {
                 L.marker([pt.lat, pt.lng], {icon: icon, zIndexOffset: 50}).bindPopup(pt.name).addTo(this.layerPokestops);
             }
 
-            for (var i = 0; i < this.catches.length; i++) {
-                var pt = this.catches[i];
-                var icon = L.icon({ iconUrl: `./assets/pokemon/${pt.id}.png`, iconSize: [50, 50], iconAnchor: [20, 20]});
-                //var pkm = `${pt.name} (lvl ${pt.lvl}) <br /> Cp:${pt.cp} Iv:${pt.iv}%`;
-                var pkm = `${pt.name} <br /> Cp:${pt.cp} Iv:${pt.iv}%`;
-                L.marker([pt.lat, pt.lng], {icon: icon, zIndexOffset: 100}).bindPopup(pkm).addTo(this.layerCatches);
-            }
+            this.initCatches();
 
             sessionStorage.setItem("available", false);
         }
@@ -93,6 +86,16 @@ Map.prototype.initPath = function() {
     }
 
     return false;
+}
+
+Map.prototype.initCatches = function() {
+    for (var i = 0; i < this.catches.length; i++) {
+        var pt = this.catches[i];
+        var icon = L.icon({ iconUrl: `./assets/pokemon/${pt.id}.png`, iconSize: [50, 50], iconAnchor: [20, 20]});
+        //var pkm = `${pt.name} (lvl ${pt.lvl}) <br /> Cp:${pt.cp} Iv:${pt.iv}%`;
+        var pkm = `${pt.name} <br /> Cp:${pt.cp} Iv:${pt.iv}%`;
+        L.marker([pt.lat, pt.lng], {icon: icon, zIndexOffset: 100}).bindPopup(pkm).addTo(this.layerCatches);
+    }
 }
 
 Map.prototype.addToPath = function(pt) {
@@ -120,8 +123,16 @@ Map.prototype.addCatch = function(pt) {
 
     this.catches.push(pt);
 
-    var icon = L.icon({ iconUrl: `./assets/pokemon/${pt.id}.png`, iconSize: [50, 50], iconAnchor: [25, 25] });
-    L.marker([pt.lat, pt.lng], {icon: icon, zIndexOffset: 100 }).bindPopup(pkm).addTo(this.layerCatches);
+    if (global.config.memory.limit && this.catches.length > global.config.memory.maxCaught) {
+        console.log("Clean catches");
+        var max = Math.floor(global.config.memory.maxCaught * 0.7);
+        this.catches = this.catches.slice(-max);
+        this.layerCatches.clearLayers();
+        this.initCatches();
+    } else {
+        var icon = L.icon({ iconUrl: `./assets/pokemon/${pt.id}.png`, iconSize: [50, 50], iconAnchor: [25, 25] });
+        L.marker([pt.lat, pt.lng], {icon: icon, zIndexOffset: 100 }).bindPopup(pkm).addTo(this.layerCatches);
+    }
 }
 
 Map.prototype.addVisitedPokestop = function(pt) {
@@ -129,27 +140,27 @@ Map.prototype.addVisitedPokestop = function(pt) {
 
     this.pokestops.push(pt);
 
-    var ps = this.availablePokestops.find(ps => ps.id == pt.id);
+    var ps = this.pokestops.find(ps => ps.id == pt.id);
     if (ps) {
         ps.marker.setIcon(L.icon({ iconUrl: `./assets/img/pokestop.png`, iconSize: [30, 50]}));
         if (pt.name) ps.marker.bindPopup(pt.name);
     } else {
         var icon = L.icon({ iconUrl: `./assets/img/pokestop.png`, iconSize: [30, 50]});
-        var marker = L.marker([pt.lat, pt.lng], {icon: icon, zIndexOffset: 50});
+        pt.marker = L.marker([pt.lat, pt.lng], {icon: icon, zIndexOffset: 50});
         if (pt.name) marker.bindPopup(pt.name);
-        marker.addTo(this.layerPokestops);
+        pt.marker.addTo(this.layerPokestops);
     }
 }
 
 Map.prototype.addPokestops = function(forts) {
     for(var i = 0; i < forts.length; i++) {
         var pt = forts[i];
-        var ps = this.availablePokestops.find(ps => ps.id == pt.id);
+        var ps = this.pokestops.find(ps => ps.id == pt.id);
         if (!ps) {
             var iconurl = pt.cooldown_timestamp_ms != null  ? `./assets/img/pokestop.png` : `./assets/img/pokestop_available.png`;
             var icon = L.icon({ iconUrl: iconurl, iconSize: [30, 50]});
             pt.marker = L.marker([pt.lat, pt.lng], {icon: icon, zIndexOffset: 50}).addTo(this.layerPokestops);
-            this.availablePokestops.push(pt);
+            this.pokestops.push(pt);
         } else if (ps.cooldown_timestamp_ms != null) {
             ps.marker.setIcon(L.icon({ iconUrl: `./assets/img/pokestop.png`, iconSize: [30, 50]}));
         }
