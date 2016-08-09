@@ -49,7 +49,6 @@
             }
             return config;
         }
-
     } else {
         console.log("Load config from storage");
 
@@ -75,7 +74,6 @@
             console.log(config);
             localStorage.setItem("config", JSON.stringify(config));
         }
-
     }
 
     window.configService = service;
