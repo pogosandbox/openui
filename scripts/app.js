@@ -63,8 +63,8 @@
         });
 
         $(".inventory .refresh").click(function() {
+            console.log("Refresh");
             global.ws.emit(global.active + "_list");
-
         });
 
         $(".inventory .close").click(function() {
