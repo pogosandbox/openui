@@ -52,12 +52,13 @@
 
     } else {
         console.log("Load config from storage");
-        defaultConfig.websocket = "ws://localhost:14252";
 
         service.load = function() {
             var config = Object.assign({}, defaultConfig);
             var json = localStorage.getItem("config");
             if (json) Object.assign(config, JSON.parse(json));
+
+            if (config.websocket.startsWith("ws")) config.websocket = defaultConfig.websocket;
 
             var host = getURLParameter("websocket");
             if (host) {

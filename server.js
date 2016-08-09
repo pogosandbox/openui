@@ -3,7 +3,7 @@ require('dotenv').config({silent: true});
 var express = require('express');
 var app = express();
 var http = require('http');
-app.use(express.static(__dirname));
+app.use(express.static(__dirname, { index: "index.htm" }));
 
 httpserver = http.createServer(app);
 
