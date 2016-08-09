@@ -62,6 +62,11 @@
             }
         });
 
+        $(".inventory .refresh").click(function() {
+            global.ws.emit(global.active + "_list");
+
+        });
+
         $(".inventory .close").click(function() {
             $(this).parent().removeClass("active");
             $(".inventory .sort").hide();
@@ -70,6 +75,8 @@
         $(".message .close").click(function() {
             $(this).parent().hide();
         });
+
+        $(".close").click(() => { global.active = null });
 
         $("#recycleLink").click(() => {
             sessionStorage.setItem("available", false);
@@ -99,7 +106,7 @@
                 global.ws.emit("evolve_pokemon", {
                     id: evolve.attr("id")
                 });
-                $(".inventory").removeClass("active");
+                evolve.parent().fadeOut();
             });
         });
 
