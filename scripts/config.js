@@ -20,10 +20,10 @@
         noPopup: false,
         noConfirm: false,
         memory: {
-            limit: true,
+            limit: false,
             maxCaught: 50,
             mathPath: 10000,
-            visitedPokestops: 250
+            maxPokestops: 250
         }
     };
 

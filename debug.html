@@ -19,9 +19,9 @@
     <script src="scripts/config.js"></script>
 
     <script>
-        var appconfig =  window.configService.load();
-
         function init() {
+            var appconfig =  window.configService.load();
+
             // Config
             $("#debug-config").html(JSON.stringify(appconfig));
 
@@ -48,11 +48,14 @@
             $("#backBtn").click(() => { window.location = "/"; });
 
             $("#clearBtn").click(() => {
+                localStorage.removeItem("config");
+
                 var i = sessionStorage.length;
                 while(i--) {
                     var key = sessionStorage.key(i);
                     sessionStorage.removeItem(key);
-                }  
+                } 
+
                 i = localStorage.length;
                 while(i--) {
                     var key = localStorage.key(i);

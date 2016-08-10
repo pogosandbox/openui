@@ -66,13 +66,7 @@ Map.prototype.loadContext = function() {
 
             if (this.steps.length > 0) this.initPath();
 
-            for (var i = 0; i < this.pokestops.length; i++) {
-                var pt = this.pokestops[i];
-                var iconurl = pt.visited  ? `./assets/img/pokestop.png` : `./assets/img/pokestop_available.png`;
-                var icon = L.icon({ iconUrl: iconurl, iconSize: [30, 50]});
-                pt.marker = L.marker([pt.lat, pt.lng], {icon: icon, zIndexOffset: 50}).bindPopup(pt.name).addTo(this.layerPokestops);
-            }
-
+            this.initPokestops();
             this.initCatches();
 
             sessionStorage.setItem("available", false);
@@ -106,6 +100,15 @@ Map.prototype.initCatches = function() {
         //var pkm = `${pt.name} (lvl ${pt.lvl}) <br /> Cp:${pt.cp} Iv:${pt.iv}%`;
         var pkm = `${pt.name} <br /> Cp:${pt.cp} Iv:${pt.iv}%`;
         L.marker([pt.lat, pt.lng], {icon: icon, zIndexOffset: 100}).bindPopup(pkm).addTo(this.layerCatches);
+    }
+}
+
+Map.prototype.initPokestops = function() {
+    for (var i = 0; i < this.pokestops.length; i++) {
+        var pt = this.pokestops[i];
+        var iconurl = pt.visited  ? `./assets/img/pokestop.png` : `./assets/img/pokestop_available.png`;
+        var icon = L.icon({ iconUrl: iconurl, iconSize: [30, 50]});
+        pt.marker = L.marker([pt.lat, pt.lng], {icon: icon, zIndexOffset: 50}).bindPopup(pt.name).addTo(this.layerPokestops);
     }
 }
 
@@ -181,6 +184,10 @@ Map.prototype.addPokestops = function(forts) {
         } else if (ps.visited) {
             ps.marker.setIcon(L.icon({ iconUrl: `./assets/img/pokestop.png`, iconSize: [30, 50]}));
         }
+    }
+
+    if (global.config.memory.limit && this.pokestops.length > global.config.memory.maxPokestops) {
+        // to much pokestops, remove some starting with unvisited ones
     }
 }
 

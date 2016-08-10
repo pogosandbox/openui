@@ -65,6 +65,7 @@ function startListenToSocket() {
         global.map.addPokestops(forts);
     });
     socket.on('pokestop_visited', msg => {
+        console.log("Pokestop Visited");
         global.map.addVisitedPokestop({
             id: msg.pokestop.fort_id,
             name: "",
@@ -74,6 +75,8 @@ function startListenToSocket() {
         });
     });
     socket.on('pokemon_caught', msg => {
+        console.log("Pokemon caught");
+        console.log(msg);
         var pokemon = msg.pokemon;
         var pkm = {
             id: pokemon.pokemon_id,
