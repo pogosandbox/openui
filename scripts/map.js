@@ -161,9 +161,11 @@ Map.prototype.addVisitedPokestop = function(pt) {
     this.pokestops.push(pt);
 
     var ps = this.pokestops.find(ps => ps.id == pt.id);
-    if (ps) {
-        ps.marker.setIcon(L.icon({ iconUrl: `./assets/img/pokestop.png`, iconSize: [30, 50]}));
-        if (pt.name) ps.marker.bindPopup(pt.name);
+    if (ps) pt = ps;
+
+    if (pt.marker) {
+        pt.marker.setIcon(L.icon({ iconUrl: `./assets/img/pokestop.png`, iconSize: [30, 50]}));
+        if (pt.name) pt.marker.bindPopup(pt.name);
     } else {
         var icon = L.icon({ iconUrl: `./assets/img/pokestop.png`, iconSize: [30, 50]});
         pt.marker = L.marker([pt.lat, pt.lng], {icon: icon, zIndexOffset: 50});
@@ -176,13 +178,14 @@ Map.prototype.addPokestops = function(forts) {
     for(var i = 0; i < forts.length; i++) {
         var pt = forts[i];
         var ps = this.pokestops.find(ps => ps.id == pt.id);
-        if (!ps) {
+        if (ps) pt = ps;
+        if (!pt.marker) {
             var iconurl = pt.visited  ? `./assets/img/pokestop.png` : `./assets/img/pokestop_available.png`;
             var icon = L.icon({ iconUrl: iconurl, iconSize: [30, 50]});
             pt.marker = L.marker([pt.lat, pt.lng], {icon: icon, zIndexOffset: 50}).addTo(this.layerPokestops);
             this.pokestops.push(pt);
-        } else if (ps.visited) {
-            ps.marker.setIcon(L.icon({ iconUrl: `./assets/img/pokestop.png`, iconSize: [30, 50]}));
+        } else if (pt.visited) {
+            pt.marker.setIcon(L.icon({ iconUrl: `./assets/img/pokestop.png`, iconSize: [30, 50]}));
         }
     }
 

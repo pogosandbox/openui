@@ -43,7 +43,7 @@ function startListenToSocket() {
                 lng: msg.coordinates[1]
             });
         }
-        $(".toolbar").show();
+        $(".toolbar div").show();
     });
     socket.on('position', msg => {
         if (!global.snipping) {
@@ -76,7 +76,7 @@ function startListenToSocket() {
     });
     socket.on('pokemon_caught', msg => {
         console.log("Pokemon caught");
-        console.log(msg);
+        //console.log(msg);
         var pokemon = msg.pokemon;
         var pkm = {
             id: pokemon.pokemon_id,
