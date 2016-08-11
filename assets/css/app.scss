@@ -208,7 +208,7 @@ body, html, .content {
 
 .pokemon {
     box-sizing: border-box;
-    width: percentage(1/3);
+    width: percentage(1/4);
     padding: .7em;
     position: relative;
     display: flex;
@@ -232,7 +232,8 @@ body, html, .content {
     }
 
     &:hover {
-      color: rgba(#436a6b, 0.3);
+        background: rgba(#436a6b, 0.1);
+        color: rgba(#436a6b, 0.3);
     }
 
     span:last-child {

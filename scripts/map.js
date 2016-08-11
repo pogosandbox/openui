@@ -139,8 +139,10 @@ Map.prototype.addCatch = function(pt) {
         pt.lng = last.lng;
     }
 
-    //var pkm = `${pt.name} (lvl ${pt.lvl}) <br /> Cp:${pt.cp} Iv:${pt.iv}%`;
     var pkm = `${pt.name}<br /> CP:${pt.cp} IV:${pt.iv}%`;
+    if (pt.lvl) {
+        pkm = `${pt.name} (lvl ${pt.lvl}) <br /> Cp:${pt.cp} Iv:${pt.iv}%`;
+    }
 
     this.catches.push(pt);
 
@@ -280,8 +282,7 @@ Map.prototype.displayPokemonList = function(all, sortBy, eggs) {
                 <span class="imgspan ${evolveClass}"><img src="./assets/pokemon/${elt.pokemonId}.png" /></span>
                 <span class="name">${elt.name}</span>
                 <span class="info">CP: <strong>${elt.cp}</strong> IV: <strong>${elt.iv}%</strong></span>
-                <span class="info">ATK: <strong>${elt.atk}</strong> DEF: <strong>${elt.def}%</strong></span>
-                <span class="info">HP: <strong>${elt.maxHp}</strong> STA: <strong>${elt.sta}%</strong></span>
+                <span class="info">ATK: <strong>${elt.stats.atk}</strong> DEF: <strong>${elt.stats.def}</strong> STA: <strong>${elt.stats.sta}</strong></span>
                 <span class="info">Candy: ${elt.candy}<span ${evolveStyle}>/${elt.candyToEvolve}</span></span>
             </div>
         `);
