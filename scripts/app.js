@@ -1,5 +1,5 @@
 (function() {
-    var global = { 
+    var global = {
         storage: {
             items: 350,
             pokemon: 250
@@ -7,7 +7,7 @@
         snipping: false
     };
     window.global = global;
- 
+
     global.config = window.configService.load();
     global.version = global.config.version;
 
@@ -40,7 +40,7 @@
         $("#eggsLink").click( function() {
             if ($(".inventory").css("opacity") == "1" && $(".inventory .data .eggs").length) {
                 $(".inventory").removeClass("active");
-            } else { 
+            } else {
                 global.ws.emit("eggs_list");
             }
         });
@@ -90,7 +90,9 @@
 
         $(".inventory .data").on("click", "a.transferAction", function() {
             var transfer = $(this).parent();
-            confirmAndSendToServer("Are you sure you want to transfer this Pokemon?", () => {
+            var pokemonId = transfer.data().pokemonId;
+            var totalLeft = global.map.pokemonList.filter(pokemon => pokemon.pokemonId == pokemonId).length;
+            confirmAndSendToServer(`Are you sure you want to transfer your ${inventoryService.getPokemonName(pokemonId)}? You currently have <strong>${totalLeft}</strong> left.`, () => {
                 ga("send", "event", "transfer");
                 global.ws.emit("transfer_pokemon", {
                     id: transfer.attr("id")
