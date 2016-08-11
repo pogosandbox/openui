@@ -207,7 +207,8 @@ body, html, .content {
 }
 
 .pokemon {
-    width: 30%;
+    box-sizing: border-box;
+    width: percentage(1/3);
     padding: .7em;
     position: relative;
     display: flex;
