@@ -20,6 +20,7 @@
     <script src="https://npmcdn.com/leaflet@1.0.0-rc.2/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vex-js/2.3.4/js/vex.combined.min.js"></script>
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.14.1/moment.min.js"></script>-->
     <script>vex.defaultOptions.className = 'vex-theme-default';</script>
     <script>if (window.module) module = window.module;</script>
 
@@ -61,6 +62,13 @@
       </div>
       <div class="numberinfo"></div>
       <div class="data"></div>
+    </div>
+    <div class="player" style="display:none">
+      <div class="level">Lvl <span class="value">1</span></div>
+      <div class="progress">
+        <span class="value" style="width: 25%"></span>
+      </div>
+      <div class="playername"><span class="value"></span></div>
     </div>
   </body>
 

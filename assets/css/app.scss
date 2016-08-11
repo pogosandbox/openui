@@ -1,4 +1,5 @@
-$white: #fff;
+$white: #eee;
+$black: #333;
 
 body, html, .content {
     font-family: Roboto;
@@ -186,15 +187,6 @@ body, html, .content {
     }
 }
 
-.pokemon {
-    width: 30%;
-    padding: .5em;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-content: center;
-}
-
 .pokemonsort {
     a {
         text-decoration: none;
@@ -215,6 +207,13 @@ body, html, .content {
 }
 
 .pokemon {
+    width: 30%;
+    padding: .5em;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    
     .imgspan {
         flex-grow: 1;
         display: flex;
@@ -268,6 +267,53 @@ body, html, .content {
         }
     }
 }
+
+.player {
+    color: $black;
+    background-color: $white;
+    box-shadow: 0px 0px 5px rgba(0,0,0,0.7);
+    border-radius: 4px;
+    bottom: 15px;
+    left: 15px;
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-content: flex-end;
+    z-index: 1000;
+    overflow: hidden;
+    width: 10%;
+    padding: 10px;
+
+    div { margin-top: 5px }
+
+    .level { font-weight: bold; }
+    .playername { font-size: 0.8em }
+
+    .progress {
+        height: 10px;  /* Can be anything */
+        position: relative;
+        background: $black;
+        border-radius: 25px;
+        padding: 5px;
+        box-shadow: inset 0 -1px 1px rgba(255,255,255,0.3);
+
+        & > span {
+            display: block;
+            height: 100%;
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
+            border-top-left-radius: 20px;
+            border-bottom-left-radius: 20px;
+            background-color: #436a6b;
+            box-shadow: 
+                inset 0 2px 9px  rgba(255,255,255,0.3),
+                inset 0 -2px 6px rgba(0,0,0,0.4);
+            position: relative;
+            overflow: hidden;
+        }
+    }
+}   
 
 .refresh {
     position: absolute;

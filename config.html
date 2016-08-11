@@ -27,7 +27,7 @@
                 sessionStorage.setItem("available", false)
             } 
 
-            appconfig.locale = $("#slLocale").val();
+            appconfig.locale = $("#slLocale").val() || "en";
             appconfig.websocket = $("#txtWebSocket").val();
             appconfig.followPlayer = $("#chkFollowPlayer").prop("checked") || false;
             appconfig.noPopup = $("#chkNoPopup").prop("checked") || false;
@@ -73,6 +73,7 @@
                             <option value="de">German</option>
                             <option value="cn">Chineese</option>
                             <option value="tw">Taiwan</option>
+                            <option value="th">Thai</option>
                         </select>
                         <label for="slLocale">Locale</label>
                     </div>

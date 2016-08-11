@@ -11,6 +11,12 @@ function startListenToSocket() {
     inventory.init(global.config.locale);
     console.log("Connecting to " + global.config.websocket);
 
+    window.setInterval(() => {
+        if (global.connected) {
+            global.ws.emit("player_stats");
+        }
+    }, 1000*60*5); // ask for player stats every 5 min 
+
     var pkmSettings = localStorage.getItem("pokemonSettings");
     if (pkmSettings) {
         global.pokemonSettings = JSON.parse(pkmSettings);
@@ -26,12 +32,16 @@ function startListenToSocket() {
         global.connected = true;
         $(".loading").text("Waiting to get GPS coordinates from Bot..."); 
     });
+    socket.on('disconnect', function() {
+        global.connected = false;
+    });
     socket.on("bot_initialized", msg => {
-        //console.log(msg)
-        if (Array.isArray(msg)) msg = msg.length > 0 ? msg[0] : {};
+        //if (Array.isArray(msg)) msg = msg.length > 0 ? msg[0] : {};
         if (msg.username) {
             console.log("Bot Ready.");
             setUserName(msg.username);
+            global.player = msg.player;
+            $(".player").trigger("pogo:player_update");
             if (msg.storage) {
                 global.storage = {
                     pokemon: msg.storage.max_pokemon_storage,
@@ -45,6 +55,10 @@ function startListenToSocket() {
         }
         $(".toolbar div").show();
     });
+    socket.on("player_stats", msg => {
+        global.player = msg.player;
+        $(".player").trigger("pogo:player_update");
+    });
     socket.on('position', msg => {
         if (!global.snipping) {
             global.map.addToPath({ 
@@ -54,12 +68,16 @@ function startListenToSocket() {
         }
     });
     socket.on('pokestops', msg => {
+        var lures = msg.pokestops.filter(f => f.lure_info != null);
+        if (lures.length) console.log(lures);
+
         var forts = Array.from(msg.pokestops.filter(f => f.fort_type == 1), f => {
             return {
                 id: f.fort_id,
                 lat: f.latitude,
                 lng: f.longitude,
-                visited: f.cooldown_timestamp_ms != null
+                visited: f.cooldown_timestamp_ms != null,
+                lure: f.lure_expires_timestamp_ms != null
             }
         });
         global.map.addPokestops(forts);
@@ -183,7 +201,7 @@ function notimplementedyet() {
 function errorToast(message) {
     toastr.error(message, "Error", {
         "progressBar": true,
-        "positionClass": "toast-top-left",
+        "positionClass": "toast-top-right",
         "timeOut": "5000",
         "closeButton": true
     });
@@ -204,7 +222,7 @@ function pokemonToast(pkm, options) {
     content += `</div>`;
     toast(content, title, {
         "progressBar": true,
-        "positionClass": "toast-bottom-left",
+        "positionClass": "toast-top-right",
         "timeOut": "5000",
         "closeButton": true
     })
