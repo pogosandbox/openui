@@ -96,8 +96,10 @@ Map.prototype.initCatches = function() {
     for (var i = 0; i < this.catches.length; i++) {
         var pt = this.catches[i];
         var icon = L.icon({ iconUrl: `./assets/pokemon/${pt.id}.png`, iconSize: [50, 50], iconAnchor: [20, 20]});
-        //var pkm = `${pt.name} (lvl ${pt.lvl}) <br /> Cp:${pt.cp} Iv:${pt.iv}%`;
         var pkm = `${pt.name} <br /> Cp:${pt.cp} Iv:${pt.iv}%`;
+        if (pt.lvl) {
+            pkm = `${pt.name} (lvl ${pt.lvl}) <br /> Cp:${pt.cp} Iv:${pt.iv}%`;
+        }
         L.marker([pt.lat, pt.lng], {icon: icon, zIndexOffset: 100}).bindPopup(pkm).addTo(this.layerCatches);
     }
 }
@@ -271,7 +273,7 @@ Map.prototype.displayPokemonList = function(all, sortBy, eggs) {
         var transferStyle = elt.favorite ? "style='display:none'" : "";
         div.append(`
             <div class="pokemon">
-                <div class="transfer" id='${elt.id}'>
+                <div class="transfer" data-id='${elt.id}'>
                     <a title='Transfer' href="#" class="transferAction ${transferStyle}"><img src="./assets/img/recyclebin.png" /></a>
                     <a title='Evolve' href="#" class="evolveAction" ${evolveStyle}><img src="./assets/img/evolve.png" /></a>
                 </div>
