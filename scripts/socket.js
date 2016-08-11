@@ -54,7 +54,10 @@ function startListenToSocket() {
             console.log(msg);
             setUserName(msg.username);
             global.player = msg.player;
-            $(".player").trigger("pogo:player_update");
+            if (global.player) {
+                $(".player").trigger("pogo:player_update");
+                ga("send", "event", "level", global.player.level);
+            }
             if (msg.storage) {
                 global.storage = {
                     pokemon: msg.storage.max_pokemon_storage,
@@ -106,16 +109,14 @@ function startListenToSocket() {
     });
     socket.on('pokemon_caught', msg => {
         console.log("Pokemon caught");
-        //console.log(msg);
+        console.log(msg);
         var pokemon = msg.pokemon;
         var pkm = {
             id: pokemon.pokemon_id,
             name: inventory.getPokemonName(pokemon.pokemon_id),
             cp: pokemon.combat_power,
             iv: (pokemon.potential * 100).toFixed(1),
-            lvl: "",
-            lat: 0,
-            lng: 0
+            lvl: inventory.getPokemonLevel(pokemon)
         };
         if (msg.position) {
             pkm.lat = msg.position.latitude;
@@ -148,7 +149,7 @@ function startListenToSocket() {
         global.map.displayInventory(items);
     });
     socket.on("pokemon_list", msg => {
-        //console.log(msg);
+        console.log(msg);
         var pkm = Array.from(msg.pokemon, p => {
             var pkmInfo = global.pokemonSettings[p.pokemon_id - 1];
             return {
@@ -158,6 +159,7 @@ function startListenToSocket() {
                 canEvolve: pkmInfo && pkmInfo.EvolutionIds.length > 0,
                 cp: p.combat_power,
                 iv: (p.potential * 100).toFixed(1),
+                lvl: inventory.getPokemonLevel(p),
                 name: p.nickname || inventory.getPokemonName(p.pokemon_id),
                 candy: msg.candy[p.pokemon_id] || 0,
                 candyToEvolve: pkmInfo ? pkmInfo.CandyToEvolve : 0,

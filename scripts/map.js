@@ -228,7 +228,6 @@ Map.prototype.updatePokestopsStatus = function() {
     });
 }
 
-
 Map.prototype.displayPokemonList = function(all, sortBy, eggs) {
     console.log("Pokemon list");
     global.active = "pokemon";
