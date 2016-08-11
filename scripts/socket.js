@@ -81,7 +81,6 @@ function startListenToSocket() {
         }
     });
     socket.on('pokestops', msg => {
-        console.log(msg);
         var forts = Array.from(msg.pokestops.filter(f => f.fort_type == 1), f => {
             return {
                 id: f.fort_id,
