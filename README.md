@@ -1,6 +1,1 @@
-# Online Visualizer
-
-## How to
-
-
-
+Project lives under branch gh-pages.
