@@ -42,7 +42,7 @@ function startListenToSocket() {
     socket.on('connect', () => {
         console.log("Connected to Bot");
         global.connected = true;
-        $(".loading").text("Waiting to get GPS coordinates from Bot..."); 
+        $(".loading").text("Waiting to get GPS coordinates from Bot...");
     });
     socket.on('disconnect', function() {
         global.connected = false;
@@ -77,9 +77,9 @@ function startListenToSocket() {
     });
     socket.on('position', msg => {
         if (!global.snipping) {
-            global.map.addToPath({ 
-                lat: msg.coordinates[0], 
-                lng: msg.coordinates[1] 
+            global.map.addToPath({
+                lat: msg.coordinates[0],
+                lng: msg.coordinates[1]
             });
         }
     });
@@ -163,14 +163,19 @@ function startListenToSocket() {
                 name: p.nickname || inventory.getPokemonName(p.pokemon_id),
                 candy: msg.candy[p.pokemon_id] || 0,
                 candyToEvolve: pkmInfo ? pkmInfo.CandyToEvolve : 0,
-                favorite: p.favorite != 0
+                favorite: p.favorite != 0,
+                atk: p.attack,
+                def: p.defense,
+                hp: p.hp,
+                maxHp: p.max_hp,
+                sta: p.stamina
             }
         });
         global.map.displayPokemonList(pkm, null, msg.eggs_count);
     });
     socket.on("eggs_list", msg => {
         var incubators = msg.egg_incubators.filter(i => i.target_km_walked != 0 || i.start_km_walked != 0);
-         incubators = Array.from(incubators, i => { 
+         incubators = Array.from(incubators, i => {
             msg.km_walked = msg.km_walked || 0;
             return {
                 type: i.item_id == 901 ? "incubator-unlimited" : "incubator",
