@@ -109,7 +109,6 @@ function startListenToSocket() {
     });
     socket.on('pokemon_caught', msg => {
         console.log("Pokemon caught");
-        console.log(msg);
         var pokemon = msg.pokemon;
         var pkm = {
             id: pokemon.pokemon_id,
@@ -149,7 +148,6 @@ function startListenToSocket() {
         global.map.displayInventory(items);
     });
     socket.on("pokemon_list", msg => {
-        console.log(msg);
         var pkm = Array.from(msg.pokemon, p => {
             var pkmInfo = global.pokemonSettings[p.pokemon_id - 1];
             return {
