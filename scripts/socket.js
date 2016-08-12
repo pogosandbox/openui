@@ -70,6 +70,12 @@ function startListenToSocket() {
             });
         }
         $(".toolbar div").show();
+        global.ws.emit("pokemon_settings");
+    });
+    socket.on("pokemon_settings", msg => {
+        console.log(msg);
+        global.pokemonSettings = msg;
+        localStorage.setItem("pokemonSettings", JSON.stringify(global.pokemonSettings));
     });
     socket.on("player_stats", msg => {
         global.player = msg.player;
@@ -150,18 +156,19 @@ function startListenToSocket() {
     socket.on("pokemon_list", msg => {
         console.log(msg);
         var pkm = Array.from(msg.pokemon, p => {
-            var pkmInfo = global.pokemonSettings[p.pokemon_id - 1];
+            var pkmInfo = global.pokemonSettings[p.pokemon_id - 1] || {};
+            console.log(pkmInfo);
             return {
                 id: p.unique_id,
                 pokemonId: p.pokemon_id,
                 inGym: p.deployed_fort_id != null,
-                canEvolve: pkmInfo && pkmInfo.EvolutionIds.length > 0,
+                canEvolve: pkmInfo.evolution_ids && pkmInfo.evolution_ids.length > 0,
                 cp: p.combat_power,
                 iv: (p.potential * 100).toFixed(1),
                 lvl: inventory.getPokemonLevel(p),
                 name: p.nickname || inventory.getPokemonName(p.pokemon_id),
-                candy: msg.candy[p.pokemon_id] || 0,
-                candyToEvolve: pkmInfo ? pkmInfo.CandyToEvolve : 0,
+                candy: msg.candy[pkmInfo.family_id] || 0,
+                candyToEvolve: pkmInfo.candy_to_evolve,
                 favorite: p.favorite != 0,
                 stats: {
                     atk: p.attack,
@@ -200,22 +207,6 @@ function startListenToSocket() {
     socket.on('player_update', msg => {
         console.log(msg);
     });
-}
-
-function notimplementedyet() {
-    var ws = null;
-    ws.onmessage = function (evt) {
-        var msg = JSON.parse(evt.data);
-        var command = msg.Command || msg.$type;
-        if (command.indexOf("PokemonSettings") >= 0) {
-            var settings = msg.Data.$values;
-            global.pokemonSettings = Array.from(msg.Data.$values, elt => {
-                elt.EvolutionIds = elt.EvolutionIds.$values;
-                return elt;
-            })
-            localStorage.setItem("pokemonSettings", JSON.stringify(global.pokemonSettings));
-        }
-    };
 }
 
 function errorToast(message) {
