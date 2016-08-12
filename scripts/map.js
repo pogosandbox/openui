@@ -96,8 +96,10 @@ Map.prototype.initCatches = function() {
     for (var i = 0; i < this.catches.length; i++) {
         var pt = this.catches[i];
         var icon = L.icon({ iconUrl: `./assets/pokemon/${pt.id}.png`, iconSize: [50, 50], iconAnchor: [20, 20]});
-        //var pkm = `${pt.name} (lvl ${pt.lvl}) <br /> Cp:${pt.cp} Iv:${pt.iv}%`;
         var pkm = `${pt.name} <br /> Cp:${pt.cp} Iv:${pt.iv}%`;
+        if (pt.lvl) {
+            pkm = `${pt.name} (lvl ${pt.lvl}) <br /> Cp:${pt.cp} Iv:${pt.iv}%`;
+        }
         L.marker([pt.lat, pt.lng], {icon: icon, zIndexOffset: 100}).bindPopup(pkm).addTo(this.layerCatches);
     }
 }
@@ -137,8 +139,10 @@ Map.prototype.addCatch = function(pt) {
         pt.lng = last.lng;
     }
 
-    //var pkm = `${pt.name} (lvl ${pt.lvl}) <br /> Cp:${pt.cp} Iv:${pt.iv}%`;
     var pkm = `${pt.name}<br /> CP:${pt.cp} IV:${pt.iv}%`;
+    if (pt.lvl) {
+        pkm = `${pt.name} (lvl ${pt.lvl}) <br /> Cp:${pt.cp} Iv:${pt.iv}%`;
+    }
 
     this.catches.push(pt);
 
@@ -228,7 +232,6 @@ Map.prototype.updatePokestopsStatus = function() {
     });
 }
 
-
 Map.prototype.displayPokemonList = function(all, sortBy, eggs) {
     console.log("Pokemon list");
     global.active = "pokemon";
@@ -272,14 +275,15 @@ Map.prototype.displayPokemonList = function(all, sortBy, eggs) {
         var transferStyle = elt.favorite ? "style='display:none'" : "";
         div.append(`
             <div class="pokemon">
-                <div class="transfer" id='${elt.id}'>
+                <div class="transfer" data-id='${elt.id}'>
                     <a title='Transfer' href="#" class="transferAction ${transferStyle}"><img src="./assets/img/recyclebin.png" /></a>
                     <a title='Evolve' href="#" class="evolveAction" ${evolveStyle}><img src="./assets/img/evolve.png" /></a>
                 </div>
-                <span class="info">CP: <strong>${elt.cp}</strong> IV: <strong>${elt.iv}%</strong></span>
-                <span class="info">Candy: ${elt.candy}<span ${evolveStyle}>/${elt.candyToEvolve}</span></span>
                 <span class="imgspan ${evolveClass}"><img src="./assets/pokemon/${elt.pokemonId}.png" /></span>
                 <span class="name">${elt.name}</span>
+                <span class="info">CP: <strong>${elt.cp}</strong> IV: <strong>${elt.iv}%</strong></span>
+                <span class="info">ATK: <strong>${elt.stats.atk}</strong> DEF: <strong>${elt.stats.def}</strong> STA: <strong>${elt.stats.sta}</strong></span>
+                <span class="info">Candy: ${elt.candy}<span ${evolveStyle}>/${elt.candyToEvolve}</span></span>
             </div>
         `);
     });

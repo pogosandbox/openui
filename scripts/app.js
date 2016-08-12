@@ -89,24 +89,36 @@
         });
 
         $(".inventory .data").on("click", "a.transferAction", function() {
-            var transfer = $(this).parent();
-            confirmAndSendToServer("Are you sure you want to transfer this Pokemon?", () => {
+            var parent = $(this).parent();
+            var id = parent.data().id;
+            var idx = global.map.pokemonList.findIndex(p => p.id == id);
+            var selected = global.map.pokemonList[idx];
+            var same = global.map.pokemonList.filter(p => p.pokemonId == selected.pokemonId);
+            var left = same.length - 1;
+            var name = window.inventoryService.getPokemonName(selected.pokemonId);
+            var msg = `Are you sure you want to transfer this ${name}? <br /> You will have <b>${left}</b> left.`;
+            confirmAndSendToServer(msg, () => {
                 ga("send", "event", "transfer");
-                global.ws.emit("transfer_pokemon", {
-                    id: transfer.attr("id")
-                });
-                transfer.parent().fadeOut();
+                global.ws.emit("transfer_pokemon", { id: id });
+                global.map.pokemonList.splice(idx, 1);
+                parent.parent().fadeOut();
             });
         });
 
         $(".inventory .data").on("click", "a.evolveAction", function() {
-            var evolve = $(this).parent();
-            confirmAndSendToServer("Are you sure you want to evolve this Pokemon?", () => {
-                ga("send", "event", "transfer");
-                global.ws.emit("evolve_pokemon", {
-                    id: evolve.attr("id")
-                });
-                evolve.parent().fadeOut();
+            var parent = $(this).parent();
+            var id = parent.data().id;
+            var idx = global.map.pokemonList.findIndex(p => p.id == id);
+            var selected = global.map.pokemonList[idx];
+            var same = global.map.pokemonList.filter(p => p.pokemonId == selected.pokemonId);
+            var left = same.length - 1;
+            var name = window.inventoryService.getPokemonName(selected.pokemonId);
+            var msg = `Are you sure you want to evolve this ${name}? <br /> You will have <b>${left}</b> left.`;
+            confirmAndSendToServer(msg, () => {
+                ga("send", "event", "evolve");
+                global.ws.emit("evolve_pokemon", { id: id });
+                global.map.pokemonList.splice(idx, 1);
+                parent.parent().fadeOut();
             });
         });
 
