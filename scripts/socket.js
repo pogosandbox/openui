@@ -73,7 +73,6 @@ function startListenToSocket() {
         global.ws.emit("pokemon_settings");
     });
     socket.on("pokemon_settings", msg => {
-        console.log(msg);
         global.pokemonSettings = msg;
         localStorage.setItem("pokemonSettings", JSON.stringify(global.pokemonSettings));
     });
