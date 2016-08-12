@@ -157,7 +157,6 @@ function startListenToSocket() {
         console.log(msg);
         var pkm = Array.from(msg.pokemon, p => {
             var pkmInfo = global.pokemonSettings[p.pokemon_id - 1] || {};
-            console.log(pkmInfo);
             return {
                 id: p.unique_id,
                 pokemonId: p.pokemon_id,
@@ -169,7 +168,7 @@ function startListenToSocket() {
                 name: p.nickname || inventory.getPokemonName(p.pokemon_id),
                 candy: msg.candy[pkmInfo.family_id] || 0,
                 candyToEvolve: pkmInfo.candy_to_evolve,
-                favorite: p.favorite != 0,
+                favorite: p.favorite > 0,
                 stats: {
                     atk: p.attack,
                     def: p.defense,
@@ -177,7 +176,7 @@ function startListenToSocket() {
                     maxHp: p.max_hp,
                     sta: p.stamina
                 }
-            }
+            };
         });
         global.map.displayPokemonList(pkm, null, msg.eggs_count);
     });

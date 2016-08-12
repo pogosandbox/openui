@@ -273,6 +273,7 @@ Map.prototype.displayPokemonList = function(all, sortBy, eggs) {
         var evolveStyle = canEvolve ? "" : "style='display:none'";
         var evolveClass = canEvolve ? "canEvolve" : "";
         var transferStyle = elt.favorite ? "style='display:none'" : "";
+        var candyStyle = elt.canEvolve ? "" : "style='display:none'";
         div.append(`
             <div class="pokemon">
                 <div class="transfer" data-id='${elt.id}'>
@@ -283,7 +284,7 @@ Map.prototype.displayPokemonList = function(all, sortBy, eggs) {
                 <span class="name">${elt.name}</span>
                 <span class="info">CP: <strong>${elt.cp}</strong> IV: <strong>${elt.iv}%</strong></span>
                 <span class="info">ATK: <strong>${elt.stats.atk}</strong> DEF: <strong>${elt.stats.def}</strong> STA: <strong>${elt.stats.sta}</strong></span>
-                <span class="info">Candy: ${elt.candy}<span ${evolveStyle}>/${elt.candyToEvolve}</span></span>
+                <span class="info">Candy: ${elt.candy}<span ${candyStyle}>/${elt.candyToEvolve}</span></span>
             </div>
         `);
     });

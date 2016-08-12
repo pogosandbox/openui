@@ -276,12 +276,11 @@ body, html, .content {
 
 .player {
     color: $black;
-    background-color: $white;
     box-shadow: 0px 0px 5px rgba(0,0,0,0.7);
     border-radius: 4px;
     bottom: 15px;
     left: 15px;
-    position: absolute;
+    position: absolute; 
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
@@ -290,11 +289,20 @@ body, html, .content {
     overflow: hidden;
     width: 10%;
     padding: 10px;
+    background-color: $white;
 
     div { margin-top: 5px }
 
     .level { font-weight: bold; }
     .playername { font-size: 0.8em }
+
+    .back {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        opacity: 0.2;
+        max-height: 100%;
+    }
 
     .progress {
         height: 10px;  /* Can be anything */
