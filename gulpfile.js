@@ -1,3 +1,4 @@
+var del         = require('del');
 var gulp        = require('gulp');
 var uglify      = require('gulp-uglify');
 var rename      = require('gulp-rename');
@@ -25,7 +26,7 @@ gulp.task('watch', [ 'watch-styles' ]);
 
 // Build
 
-gulp.task('styles', function() {
+gulp.task('styles', ['static'], function() {
     return gulp.src('src/assets/css/*.scss')
                 .pipe(sass().on('error', sass.logError))
                 .pipe(cssnano())
@@ -38,6 +39,10 @@ gulp.task('scripts', function() {
                     js: [
                         babel({ presets: ['es2015'] }),
                         uglify()
+                    ],
+                    jsconfig: [
+                        babel({ presets: ['es2015'] }),
+                        uglify()
                     ]
                 }))
                 .pipe(gulp.dest('./build'));
@@ -48,7 +53,11 @@ gulp.task('static', function() {
              .pipe(gulp.dest('./build'));
 });
 
-gulp.task('build', [ 'static', 'styles', 'scripts' ]);
+gulp.task("clean", function() {
+   del("build/*"); 
+});
+
+gulp.task('build', [ 'clean', 'static', 'styles', 'scripts' ]);
 
 // Deploy
 
