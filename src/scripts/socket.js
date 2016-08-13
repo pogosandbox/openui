@@ -129,9 +129,6 @@ function startListenToSocket() {
         global.map.addCatch(pkm);
         pokemonToast(pkm, { ball: pokemon.pokeball });
     });
-    socket.on("transfered_pokemon", msg => {
-        //console.log(msg)
-    });
     socket.on("pokemon_evolved", msg => {
         //console.log(msg);
         var info = {
@@ -142,6 +139,7 @@ function startListenToSocket() {
         pokemonToast(info, { title: `A ${from} Evolved` });
     });
     socket.on("inventory_list", msg => {
+        //console.log(msg);
         var items = Array.from(Object.keys(msg.inventory).filter(k => k != "count"), item => {
             var itemid = parseInt(item);
             return {
@@ -153,7 +151,7 @@ function startListenToSocket() {
         global.map.displayInventory(items);
     });
     socket.on("pokemon_list", msg => {
-        console.log(msg);
+        //console.log(msg);
         var pkm = Array.from(msg.pokemon, p => {
             var pkmInfo = global.pokemonSettings[p.pokemon_id - 1] || {};
             return {
@@ -199,12 +197,6 @@ function startListenToSocket() {
         });
         global.map.displayEggsList(incubators.concat(eggs));
     });
-    socket.on('pokemon_found', msg => {
-        console.log(msg);
-    });
-    socket.on('player_update', msg => {
-        console.log(msg);
-    });
 }
 
 function errorToast(message) {
@@ -232,7 +224,7 @@ function pokemonToast(pkm, options) {
     toast(content, title, {
         "progressBar": true,
         "positionClass": "toast-top-right",
-        "timeOut": "5000",
+        "timeOut": 5000,
         "closeButton": true
     })
 }
