@@ -7,7 +7,23 @@ var babel       = require('gulp-babel');
 var usemin      = require('gulp-usemin');
 var ghPages     = require('gulp-gh-pages');
 
-// Auto
+// Watch
+
+gulp.task('dev-styles', function() {
+    return gulp.src('src/assets/css/*.scss')
+                .pipe(sass.sync().on('error', sass.logError))
+                .pipe(gulp.dest(function(f) {
+                    return f.base;
+                }));
+});
+
+gulp.task('watch-styles', function() {
+   return gulp.watch('src/assets/css/*.scss', ['dev-styles']);
+});
+
+gulp.task('watch', [ 'watch-styles' ]);
+
+// Build
 
 gulp.task('styles', function() {
     return gulp.src('src/assets/css/*.scss')
@@ -32,13 +48,9 @@ gulp.task('static', function() {
              .pipe(gulp.dest('./build'));
 });
 
-gulp.task('watch-styles', function() {
-   return gulp.watch('src/assets/css/*.scss', ['styles']);
-});
-
-gulp.task('watch', [ 'watch-styles' ]);
-
 gulp.task('build', [ 'static', 'styles', 'scripts' ]);
+
+// Deploy
 
 gulp.task('deploy:staging', ['build'], function() {
   return gulp.src([
@@ -51,5 +63,7 @@ gulp.task('deploy:production', ['build'], function() {
       './build/**/*'
     ]).pipe(gulp.dest('./build')).pipe(ghPages({remoteUrl: "https://github.com/OpenPoGo/OpenPoGoUI.git"}));
 });
+
+// Default
 
 gulp.task('default', [ 'build' ]);
