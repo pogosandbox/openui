@@ -2,5 +2,7 @@
 .npm
 node_modules
 bower_components
-client/app/myapp.min.js
 certs
+build
+.publish
+src/assets/css/*.css
