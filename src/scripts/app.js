@@ -17,9 +17,7 @@
         if (!global.config.noConfirm) {
             vex.dialog.confirm({
                 message: msg,
-                callback: function(value) {
-                    if(value) callback();
-                }
+                callback: (value) => { if(value) callback(); }
             });
         } else {
             callback();
@@ -95,12 +93,11 @@
             var id = parent.data().id;
             var idx = global.map.pokemonList.findIndex(p => p.id == id);
             var selected = global.map.pokemonList[idx];
-            var same = global.map.pokemonList.filter(p => p.pokemonId == selected.pokemonId);
-            var left = same.length - 1;
-            var name = window.inventoryService.getPokemonName(selected.pokemonId);
+            var left = global.map.pokemonList.filter(p => p.pokemonId == selected.pokemonId).length - 1;
+            var name = inventoryService.getPokemonName(selected.pokemonId);
             var msg = `Are you sure you want to transfer this ${name}? <br /> You will have <b>${left}</b> left.`;
             confirmAndSendToServer(msg, () => {
-                ga("send", "event", "transfer", selected.pokemonId);
+                ga("send", "event", "transfer", name);
                 global.ws.emit("transfer_pokemon", { id: id });
                 global.map.pokemonList.splice(idx, 1);
                 parent.parent().fadeOut();
@@ -112,15 +109,38 @@
             var id = parent.data().id;
             var idx = global.map.pokemonList.findIndex(p => p.id == id);
             var selected = global.map.pokemonList[idx];
-            var same = global.map.pokemonList.filter(p => p.pokemonId == selected.pokemonId);
-            var left = same.length - 1;
-            var name = window.inventoryService.getPokemonName(selected.pokemonId);
+            var left = global.map.pokemonList.filter(p => p.pokemonId == selected.pokemonId).length - 1;
+            var name = inventoryService.getPokemonName(selected.pokemonId);
             var msg = `Are you sure you want to evolve this ${name}? <br /> You will have <b>${left}</b> left.`;
             confirmAndSendToServer(msg, () => {
-                ga("send", "event", "evolve", selected.pokemonId);
+                ga("send", "event", "evolve", name);
                 global.ws.emit("evolve_pokemon", { id: id });
                 global.map.pokemonList.splice(idx, 1);
                 parent.parent().fadeOut();
+            });
+        });
+
+        $(".inventory .data").on("click", "a.dropItemAction", function() {
+            var parent = $(this).parent();
+            var itemId = parent.data().id;
+            var name = inventoryService.getItemName(itemId)
+            var count = parent.data().count;
+            var msg = `How many ${name} would you like to drop?`;
+            vex.dialog.confirm({
+                message: msg,
+                input: `
+                    <p class="range-field">
+                        <input type="range" name="count" value="1" min="1" max="${count}" onchange="$('#display-range').text(this.value)" />
+                    </p>
+                    Drop: <span id='display-range'>1</span>
+                `,
+                callback: (value) => {
+                    if(value) {
+                        count = parseInt(value.count),
+                        ga("send", "event", "drop_items", name);
+                        global.ws.emit("drop_items", { id: itemId, count: count });
+                    }
+                }
             });
         });
 
@@ -130,7 +150,7 @@
                 player.find(".playername .value").text(global.user);
                 player.find(".level .value").text(global.player.level);
                 var percent = 100*(global.player.experience - global.player.prev_level_xp)/(global.player.next_level_xp - global.player.prev_level_xp);
-                player.find(".progress .value").css("width", `${percent.toFixed(0)}%`);
+                player.find(".myprogress .value").css("width", `${percent.toFixed(0)}%`);
                 player.show();
             }
         });

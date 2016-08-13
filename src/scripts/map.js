@@ -302,7 +302,7 @@ Map.prototype.displayEggsList = function(eggs) {
     eggs.forEach(function(elt) {
         if (elt) {
             div.append(`
-                <div class="eggs">
+                <div class="item">
                     <span class="imgspan"><img src="./assets/inventory/${elt.type}.png" /></span>
                     <span>${elt.doneDist.toFixed(1)} / ${elt.totalDist.toFixed(1)} km</span>
                 </div>
@@ -321,8 +321,13 @@ Map.prototype.displayInventory = function(items) {
     var div = $(".inventory .data");
     div.html(``);
     items.forEach(function(elt) {
+        var dropStyle = elt.item_id == 901 ? "hide" : "";
         div.append(`
-            <div class="items">
+            <div class="item">
+                <div class="transfer" data-id='${elt.item_id}' data-count='${elt.count}'>
+                    <a title='Drop' href="#" class="dropItemAction ${dropStyle}"><img src="./assets/img/recyclebin.png" /></a>
+                </div>
+
                 <span>x${elt.count}</span>
                 <span class="imgspan"><img src="./assets/inventory/${elt.item_id}.png" /></span>
                 <span class="info">${elt.name}</span>
