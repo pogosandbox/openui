@@ -27,6 +27,8 @@
     }
 
     $(function() {
+        window.ga = window.ga || function() {};
+
         var sortBy = localStorage.getItem("sortPokemonBy") || "cp";
         $("#sortBy" + sortBy).addClass("active").siblings().removeClass("active");
 
@@ -98,7 +100,7 @@
             var name = window.inventoryService.getPokemonName(selected.pokemonId);
             var msg = `Are you sure you want to transfer this ${name}? <br /> You will have <b>${left}</b> left.`;
             confirmAndSendToServer(msg, () => {
-                ga("send", "event", "transfer");
+                ga("send", "event", "transfer", selected.pokemonId);
                 global.ws.emit("transfer_pokemon", { id: id });
                 global.map.pokemonList.splice(idx, 1);
                 parent.parent().fadeOut();
@@ -115,7 +117,7 @@
             var name = window.inventoryService.getPokemonName(selected.pokemonId);
             var msg = `Are you sure you want to evolve this ${name}? <br /> You will have <b>${left}</b> left.`;
             confirmAndSendToServer(msg, () => {
-                ga("send", "event", "evolve");
+                ga("send", "event", "evolve", selected.pokemonId);
                 global.ws.emit("evolve_pokemon", { id: id });
                 global.map.pokemonList.splice(idx, 1);
                 parent.parent().fadeOut();
