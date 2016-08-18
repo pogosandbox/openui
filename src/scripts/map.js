@@ -8,7 +8,7 @@ var Map = function(parentDiv) {
     var watercolor = L.tileLayer('http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.jpg');
 
     this.layerPokestops = new L.LayerGroup();
-    this.layerCatches = new L.LayerGroup();
+    this.layerCatches = L.markerClusterGroup({ maxClusterRadius: 30 });
     this.layerPath = new L.LayerGroup();
 
     this.map = L.map(parentDiv, {
@@ -28,9 +28,24 @@ var Map = function(parentDiv) {
         "Catches": this.layerCatches
     };
 
+    // save selected base map on click
     L.control.layers(baseLayers, overlays).addTo(this.map);
+    this.map.on('baselayerchange', (function(ev) { 
+        let name = ev.name;
+        localStorage.setItem("layer", name);
+    }).bind(this));
+
+    // restore saved base map
+    base = localStorage.getItem("layer");
+    if (base) {
+        $(`.leaflet-control-layers-base span:contains('${base}')`).first().prev().click();
+    }
+
+    this.map.on('singleclick', (function(ev) { this.setDestination(ev.latlng) }).bind(this));
 
     this.path = null;
+    this.route = null;
+    this.destination = null;
 
     this.steps = [];
     this.catches = [];
@@ -95,7 +110,7 @@ Map.prototype.initPath = function() {
 Map.prototype.initCatches = function() {
     for (var i = 0; i < this.catches.length; i++) {
         var pt = this.catches[i];
-        var icon = L.icon({ iconUrl: `./assets/pokemon/${pt.id}.png`, iconSize: [50, 50], iconAnchor: [20, 20]});
+        var icon = L.icon({ iconUrl: `./assets/pokemon/${pt.id}.png`, iconSize: [60, 60], iconAnchor: [30, 30]});
         var pkm = `${pt.name} <br /> Cp:${pt.cp} Iv:${pt.iv}%`;
         if (pt.lvl) {
             pkm = `${pt.name} (lvl ${pt.lvl}) <br /> Cp:${pt.cp} Iv:${pt.iv}%`;
@@ -126,7 +141,7 @@ Map.prototype.addToPath = function(pt) {
         this.path.addLatLng(latLng);
         this.me.setLatLng(latLng).getPopup().setContent(`${pt.lat.toFixed(4)},${pt.lng.toFixed(4)}`);
         if (global.config.followPlayer) {
-            this.map.panTo(latLng, true);
+            this.map.panTo(latLng, { animate: true });
         }
     }
 }
@@ -153,7 +168,7 @@ Map.prototype.addCatch = function(pt) {
         this.layerCatches.clearLayers();
         this.initCatches();
     } else {
-        var icon = L.icon({ iconUrl: `./assets/pokemon/${pt.id}.png`, iconSize: [50, 50], iconAnchor: [25, 25] });
+        var icon = L.icon({ iconUrl: `./assets/pokemon/${pt.id}.png`, iconSize: [60, 60], iconAnchor: [30, 30] });
         L.marker([pt.lat, pt.lng], {icon: icon, zIndexOffset: 100 }).bindPopup(pkm).addTo(this.layerCatches);
     }
 }
@@ -232,6 +247,16 @@ Map.prototype.updatePokestopsStatus = function() {
     });
 }
 
+Map.prototype.setRoute = function(route) {
+    var points = Array.from(route, pt => L.latLng(pt.lat, pt.lng));
+    if (this.route != null) {
+        this.route.setLatLngs(points);
+    } else {
+        this.route = L.polyline(points, { dashArray: "5, 5", color: 'red', opacity: 0.4 }).addTo(this.layerPath);
+    }
+
+}
+
 Map.prototype.displayPokemonList = function(all, sortBy, eggs) {
     console.log("Pokemon list");
     global.active = "pokemon";
@@ -270,20 +295,22 @@ Map.prototype.displayPokemonList = function(all, sortBy, eggs) {
     div.html(``);
     this.pokemonList.forEach(function(elt) {
         var canEvolve = elt.canEvolve && !elt.inGym && elt.candy >= elt.candyToEvolve;
-        var evolveStyle = canEvolve ? "" : "style='display:none'";
+        var evolveStyle = canEvolve ? "" : "hide";
         var evolveClass = canEvolve ? "canEvolve" : "";
-        var transferStyle = elt.favorite ? "style='display:none'" : "";
+        var transferClass = elt.favorite ? "hide" : "";
         var candyStyle = elt.canEvolve ? "" : "style='display:none'";
+        var fav = elt.favorite ? "set" : "unset";
         div.append(`
             <div class="pokemon">
                 <div class="transfer" data-id='${elt.id}'>
-                    <a title='Transfer' href="#" class="transferAction ${transferStyle}"><img src="./assets/img/recyclebin.png" /></a>
-                    <a title='Evolve' href="#" class="evolveAction" ${evolveStyle}><img src="./assets/img/evolve.png" /></a>
+                    <a title='(Un)Favorite' href="#" class="favoriteAction"><img src="./assets/img/favorite_${fav}.png" /></a>
+                    <a title='Transfer' href="#" class="transferAction ${transferClass}"><img src="./assets/img/recyclebin.png" /></a>
+                    <a title='Evolve' href="#" class="evolveAction ${evolveStyle}"><img src="./assets/img/evolve.png" /></a>
                 </div>
                 <span class="imgspan ${evolveClass}"><img src="./assets/pokemon/${elt.pokemonId}.png" /></span>
-                <span class="name">${elt.name}</span>
+                <span class="name">${elt.name} lvl ${elt.lvl}</span>
                 <span class="info">CP: <strong>${elt.cp}</strong> IV: <strong>${elt.iv}%</strong></span>
-                <span class="info">ATK: <strong>${elt.stats.atk}</strong> DEF: <strong>${elt.stats.def}</strong> STA: <strong>${elt.stats.sta}</strong></span>
+                <span class="info hide-on-small-only">ATK: <strong>${elt.stats.atk}</strong> DEF: <strong>${elt.stats.def}</strong> STA: <strong>${elt.stats.sta}</strong></span>
                 <span class="info">Candy: ${elt.candy}<span ${candyStyle}>/${elt.candyToEvolve}</span></span>
             </div>
         `);
@@ -302,7 +329,7 @@ Map.prototype.displayEggsList = function(eggs) {
     eggs.forEach(function(elt) {
         if (elt) {
             div.append(`
-                <div class="item">
+                <div class="egg">
                     <span class="imgspan"><img src="./assets/inventory/${elt.type}.png" /></span>
                     <span>${elt.doneDist.toFixed(1)} / ${elt.totalDist.toFixed(1)} km</span>
                 </div>
@@ -336,3 +363,69 @@ Map.prototype.displayInventory = function(items) {
     });
     $(".inventory").show().addClass("active");
 };
+
+Map.prototype.setDestination = function(latlng) {
+    var popup = L.popup().setLatLng(latlng)
+                 .setContent(`<div class='dest'>${latlng.lat.toFixed(6)}, ${latlng.lng.toFixed(6)}</div><div class="center-align"><a class="destBtn waves-effect waves-light btn">Go?</a></div>`)
+                 .openOn(this.map);
+
+    $(".destBtn").click((function() {
+        this.map.closePopup(popup);
+        console.log(`Set destination: ${latlng.lat}, ${latlng.lng}`);
+        if (this.destination) {
+            this.layerPath.removeLayer(this.destination);
+        }
+
+        this.destination = L.marker(latlng, { zIndexOffset: 199, icon: new RedIcon() }).bindPopup(`${latlng.lat}, ${latlng.lng}`).addTo(this.layerPath);
+        global.ws.emit("set_destination", latlng);
+    }).bind(this));
+}
+
+Map.prototype.manualDestinationReached = function() {
+    this.layerPath.removeLayer(this.destination);
+    this.destination = null;
+}
+
+// Red icon
+
+var RedIcon = L.Icon.Default.extend({
+    options: {
+        iconUrl: 'assets/img/marker-icon-red.png' 
+    }
+});
+
+// Fix zindex for groups
+
+L.MarkerCluster.prototype.true_initialize = L.MarkerCluster.prototype.initialize;
+L.MarkerCluster.prototype.initialize = function (group, zoom, a, b) {
+    this.true_initialize(group, zoom, a, b);
+    this.setZIndexOffset(200);
+}
+
+// Add event for single click
+
+L.Evented.addInitHook( function () {
+    this._singleClickTimeout = null;
+    this.on('click', this._scheduleSingleClick, this);
+    this.on('dblclick dragstart zoomstart', this._clearSingleClickTimeout.bind(this), this);
+});
+
+L.Evented.include({
+    _scheduleSingleClick: function(e) {
+        this._clearSingleClickTimeout();
+        this._singleClickTimeout = setTimeout(this._fireSingleClick.bind(this, e), 500)
+    },
+
+    _fireSingleClick: function(e){
+        if (!e.originalEvent._stopped) {
+            this.fire('singleclick', L.Util.extend(e, { type : 'singleclick' }));
+        }
+    },
+
+    _clearSingleClickTimeout: function(){
+        if (this._singleClickTimeout != null) {
+            clearTimeout(this._singleClickTimeout);
+            this._singleClickTimeout = null;
+        }
+    }
+});

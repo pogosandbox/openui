@@ -2,24 +2,20 @@
     var allPokemon = null;
     var allItems = null;
 
-    function load(locale) {
-        locale = locale || "en";
-        $.ajax({
-            url: `assets/json/pokemon.${locale}.json`,
-            async: false,
-            success: (result) => { allPokemon = (typeof result == "string" ? JSON.parse(result) : result); }
-        });
-        $.ajax({
-            url: `assets/json/inventory.${locale}.json`,
-            async: false,
-            success: (result) => { allItems = (typeof result == "string" ? JSON.parse(result) : result); }
-        });
-    }
-
     var service = {};
 
-    service.init = function(locale) {
-        if (allItems == null) load(locale);
+    service.init = function(locale, callback) {
+        locale = locale || "en";
+        $.when(
+            $.ajax({
+                url: `assets/json/pokemon.${locale}.json`,
+                success: (result) => { allPokemon = (typeof result == "string" ? JSON.parse(result) : result); }
+            }),
+            $.ajax({
+                url: `assets/json/inventory.${locale}.json`,
+                success: (result) => { allItems = (typeof result == "string" ? JSON.parse(result) : result); }
+            })
+        ).then(callback);
     }
 
     service.getPokemonName = function(id) {

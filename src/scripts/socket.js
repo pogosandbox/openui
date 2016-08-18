@@ -44,7 +44,7 @@ function startListenToSocket() {
         global.connected = true;
         $(".loading").text("Waiting to get GPS coordinates from Bot...");
     });
-    socket.on('disconnect', function() {
+    socket.on('disconnect', () => {
         global.connected = false;
     });
     socket.on("bot_initialized", msg => {
@@ -89,6 +89,7 @@ function startListenToSocket() {
         }
     });
     socket.on('pokestops', msg => {
+        //console.log(msg);
         var forts = Array.from(msg.pokestops.filter(f => f.fort_type == 1), f => {
             return {
                 id: f.fort_id,
@@ -165,7 +166,7 @@ function startListenToSocket() {
                 name: p.nickname || inventory.getPokemonName(p.pokemon_id),
                 candy: msg.candy[pkmInfo.family_id] || 0,
                 candyToEvolve: pkmInfo.candy_to_evolve,
-                favorite: p.favorite > 0,
+                favorite: p.favorite == "True",
                 stats: {
                     atk: p.attack,
                     def: p.defense,
@@ -178,9 +179,9 @@ function startListenToSocket() {
         global.map.displayPokemonList(pkm, null, msg.eggs_count);
     });
     socket.on("eggs_list", msg => {
+        msg.km_walked = msg.km_walked || 0;
         var incubators = msg.egg_incubators.filter(i => i.target_km_walked != 0 || i.start_km_walked != 0);
-         incubators = Array.from(incubators, i => {
-            msg.km_walked = msg.km_walked || 0;
+        incubators = Array.from(incubators, i => {
             return {
                 type: i.item_id == 901 ? "incubator-unlimited" : "incubator",
                 totalDist: i.target_km_walked - i.start_km_walked,
@@ -197,6 +198,12 @@ function startListenToSocket() {
         });
         global.map.displayEggsList(incubators.concat(eggs));
     });
+    socket.on("route", route => {
+        global.map.setRoute(Array.from(route, pt => { return { lat: pt[0], lng: pt[1] } }));
+    });
+    socket.on("manual_destination_reached_event", () => {
+        global.map.manualDestinationReached();
+    })
 }
 
 function errorToast(message) {

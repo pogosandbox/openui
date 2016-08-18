@@ -25,6 +25,10 @@
     }
 
     $(function() {
+        inventoryService.init(global.config.locale, launchApp);
+    });
+
+    function launchApp() {
         window.ga = window.ga || function() {};
 
         var sortBy = localStorage.getItem("sortPokemonBy") || "cp";
@@ -38,14 +42,14 @@
             }
         });
         $("#eggsLink").click( function() {
-            if ($(".inventory").css("opacity") == "1" && $(".inventory .data .eggs").length) {
+            if ($(".inventory").css("opacity") == "1" && $(".inventory .data .egg").length) {
                 $(".inventory").removeClass("active");
             } else { 
                 global.ws.emit("eggs_list");
             }
         });
         $("#inventoryLink").click( function() {
-            if ($(".inventory").css("opacity") == "1" && $(".inventory .data .items").length) {
+            if ($(".inventory").css("opacity") == "1" && $(".inventory .data .item").length) {
                 $(".inventory").removeClass("active");
             } else {
                 global.ws.emit("inventory_list");
@@ -119,6 +123,19 @@
                 parent.parent().fadeOut();
             });
         });
+        
+        $(".inventory .data").on("click", "a.favoriteAction", function() {
+            var parent = $(this).parent();
+            var id = parent.data().id;
+            var idx = global.map.pokemonList.findIndex(p => p.id == id);
+            var selected = global.map.pokemonList[idx];
+            selected.favorite = !selected.favorite;
+            var name = inventoryService.getPokemonName(selected.pokemonId);
+            ga("send", "event", "favorite", name);
+            $(this).find("img").attr('src', `./assets/img/favorite_${selected.favorite ? 'set' : 'unset'}.png`);
+            parent.find(".transferAction").toggleClass("hide");
+            global.ws.emit("favorite_pokemon", { id: id, favorite: selected.favorite });
+        });
 
         $(".inventory .data").on("click", "a.dropItemAction", function() {
             var parent = $(this).parent();
@@ -139,8 +156,12 @@
                         var drop = parseInt(value.count);
                         ga("send", "event", "drop_items", name);
                         global.ws.emit("drop_items", { id: itemId, count: drop });
-                        parent.data("count", count - drop);
-                        parent.parent().find(".count").text(count - drop);
+                        if (count == drop) {
+                            parent.parent().fadeOut();
+                        } else {
+                            parent.data("count", count - drop);
+                            parent.parent().find(".count").text("x" + (count - drop));
+                        }
                     }
                 }
             });
@@ -166,6 +187,6 @@
             // no settings, first time run?
             window.location = "config.html";
         }
-    });
+    }
 
 }());

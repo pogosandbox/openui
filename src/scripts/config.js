@@ -70,10 +70,7 @@
             if (config.websocket.startsWith("ws")) config.websocket = defaultConfig.websocket;
 
             var host = getURLParameter("websocket");
-            if (host) {
-                console.log(host);
-                config.websocket = host;
-            }
+            if (host) config.websocket = host;
 
             config.version = "online";
 
