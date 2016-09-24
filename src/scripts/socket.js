@@ -36,7 +36,7 @@ function startListenToSocket() {
         global.pokemonSettings = {};
     }
 
-    var socket = io.connect(global.config.websocket + "/event");
+    var socket = io.connect(global.config.websocket + "/event", {transports: ['websocket', 'polling']});
     global.ws = socket;
 
     socket.on('connect', () => {
