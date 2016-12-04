@@ -25,7 +25,7 @@ if (process.env.FAKE_BOT_ENABLED == "true") {
     var io = require('socket.io')(httpserver);
     var pos = [48.856297, 2.297987];
     io.of("/event").on('connection', function (socket) {
-        socket.emit('bot_initialized', { 
+        socket.emit('initialized', { 
             username: "user",
             player: { level: 1, experience: 600, prev_level_xp: 0, next_level_xp: 1000 },
             storage: { max_pokemon_storage: 250, max_item_storage: 350 },

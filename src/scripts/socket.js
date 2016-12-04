@@ -36,7 +36,7 @@ function startListenToSocket() {
         global.pokemonSettings = {};
     }
 
-    var socket = io.connect(global.config.websocket + "/event", {transports: ['websocket', 'polling']});
+    var socket = io(global.config.websocket, {transports: ['websocket', 'polling']});
     global.ws = socket;
 
     socket.on('connect', () => {
@@ -47,7 +47,7 @@ function startListenToSocket() {
     socket.on('disconnect', () => {
         global.connected = false;
     });
-    socket.on("bot_initialized", msg => {
+    socket.on("initialized", msg => {
         if (msg.username) {
             console.log("Bot Ready.");
             console.log(msg);
@@ -63,10 +63,7 @@ function startListenToSocket() {
                     items: msg.storage.max_item_storage
                 }
             }
-            global.map.addToPath({
-                lat: msg.coordinates[0],
-                lng: msg.coordinates[1]
-            });
+            global.map.addToPath(msg.pos);
         }
         $(".toolbar div").show();
         global.ws.emit("pokemon_settings");
@@ -81,10 +78,7 @@ function startListenToSocket() {
     });
     socket.on('position', msg => {
         if (!global.snipping) {
-            global.map.addToPath({
-                lat: msg.coordinates[0],
-                lng: msg.coordinates[1]
-            });
+            global.map.addToPath(msg.pos);
         }
     });
     socket.on('pokestops', msg => {
