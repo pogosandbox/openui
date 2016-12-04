@@ -76,33 +76,34 @@ function startListenToSocket() {
         global.player = msg.player;
         $(".player").trigger("pogo:player_update");
     });
-    socket.on('position', msg => {
+    socket.on('position', pos => {
         if (!global.snipping) {
-            global.map.addToPath(msg.pos);
+            global.map.addToPath(pos);
         }
     });
-    socket.on('pokestops', msg => {
-        //console.log(msg);
-        var forts = Array.from(msg.pokestops.filter(f => f.fort_type == 1), f => {
+    socket.on('pokestops', pokestops => {
+        var forts = Array.from(pokestops, f => {
+            if (f.lure_info) console.log(f.lure_info);
             return {
-                id: f.fort_id,
+                id: f.id,
                 lat: f.latitude,
                 lng: f.longitude,
-                cooldown: parseInt(f.cooldown_timestamp_ms) || null,
+                cooldown: parseInt(f.cooldown_complete_timestamp_ms) || null,
                 lureExpire: parseInt(f.lure_expires_timestamp_ms) || null
             }
         });
         global.map.addPokestops(forts);
     });
-    socket.on('pokestop_visited', msg => {
+    socket.on('pokestop_visited', pokestop => {
         console.log("Pokestop Visited");
+        console.log(pokestop);
         global.map.addVisitedPokestop({
-            id: msg.pokestop.fort_id,
+            id: pokestop.id,
             name: "",
-            lat: msg.pokestop.latitude,
-            lng: msg.pokestop.longitude,
-            cooldown: parseInt(msg.pokestop.cooldown_timestamp_ms) || null,
-            lureExpire: parseInt(msg.pokestop.lure_expires_timestamp_ms) || null,
+            lat: pokestop.latitude,
+            lng: pokestop.longitude,
+            cooldown: parseInt(pokestop.cooldown_complete_timestamp_ms) || null,
+            lureExpire: parseInt(pokestop.lure_expires_timestamp_ms) || null,
             visited: true
         });
     });
@@ -132,15 +133,14 @@ function startListenToSocket() {
         var from = inventory.getPokemonName(msg.pokemon.pokemon_id)
         pokemonToast(info, { title: `A ${from} Evolved` });
     });
-    socket.on("inventory_list", msg => {
-        //console.log(msg);
-        var items = Array.from(Object.keys(msg.inventory).filter(k => k != "count"), item => {
-            var itemid = parseInt(item);
+    socket.on("inventory_list", items => {
+        console.log(items);
+        var items = Array.from(items, i => {
             return {
-                item_id: itemid,
-                name: inventory.getItemName(itemid),
-                count: msg.inventory[item]
-            }
+                item_id: i.item_id,
+                name: inventory.getItemName(i.item_id),
+                count: i.count
+            } 
         });
         global.map.displayInventory(items);
     });
@@ -171,6 +171,7 @@ function startListenToSocket() {
         global.map.displayPokemonList(pkm, null, msg.eggs_count);
     });
     socket.on("eggs_list", msg => {
+        console.log(msg);
         msg.km_walked = msg.km_walked || 0;
         var incubators = msg.egg_incubators.filter(i => i.target_km_walked != 0 || i.start_km_walked != 0);
         incubators = Array.from(incubators, i => {
@@ -191,8 +192,8 @@ function startListenToSocket() {
         global.map.displayEggsList(incubators.concat(eggs));
     });
     socket.on("route", route => {
-        console.log("New route received");
-        console.log(route);
+        // console.log("New route received");
+        // console.log(route);
         global.map.setRoute(route);
     });
     socket.on("manual_destination_reached", () => {

@@ -190,6 +190,7 @@ Map.prototype.addVisitedPokestop = function(pt) {
     if (ps && ps.marker) {
         ps.marker.setIcon(L.icon({ iconUrl: `./assets/img/pokestop_cooldown.png`, iconSize: [40, 40], iconAnchor: [20, 20] }));
         if (ps.name) ps.marker.bindPopup(ps.name);
+        else ps.marker.bindPopup(ps.id);
     }
 }
 
@@ -212,6 +213,8 @@ Map.prototype.addPokestops = function(forts) {
         if (!pt.marker) {
             var icon = L.icon({ iconUrl: `./assets/img/${icon}.png`, iconSize: [40, 40], iconAnchor: [20, 20] });
             pt.marker = L.marker([pt.lat, pt.lng], {icon: icon, zIndexOffset: 50}).addTo(this.layerPokestops);
+            if (pt.name) pt.marker.bindPopup(pt.name);
+            else pt.marker.bindPopup(pt.id);
         } else {
             pt.marker.setIcon(L.icon({ iconUrl: `./assets/img/${icon}.png`, iconSize: [40, 40], iconAnchor: [20, 20] }));
         }
