@@ -191,7 +191,9 @@ function startListenToSocket() {
         global.map.displayEggsList(incubators.concat(eggs));
     });
     socket.on("route", route => {
-        global.map.setRoute(Array.from(route, pt => { return { lat: pt[0], lng: pt[1] } }));
+        console.log("New route received");
+        console.log(route);
+        global.map.setRoute(route);
     });
     socket.on("manual_destination_reached", () => {
         global.map.manualDestinationReached();
