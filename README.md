@@ -1,7 +1,6 @@
-# OpenUI for OpenGoBot
-
-Alternate UI for **OpenPoGoBot**.  
-Available at [http://openpogoui.nicontoso.eu](http://openpogoui.nicontoso.eu).  
+# General UI for Pogo Bots
+  
+Available at [http://openui.nicontoso.eu](http://openui.nicontoso.eu).  
 
 ## Dev
 

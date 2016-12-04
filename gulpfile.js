@@ -62,23 +62,23 @@ gulp.task('build', [ 'clean', 'static', 'styles', 'scripts' ]);
 
 // Deploy
 
-gulp.task('deploy:staging', ['build'], function() {
+gulp.task('deploy', ['build'], function() {
   return gulp.src([
       './build/**/*'
     ])
     .pipe(file('CNAME', "openui.nicontoso.eu"))
     .pipe(gulp.dest('./build'))
-    .pipe(ghPages({remoteUrl: "https://github.com/nicoschmitt/openui.git"}));
+    .pipe(ghPages({remoteUrl: "https://github.com/pogosandbox/openui.git"}));
 });
 
-gulp.task('deploy:production', ['build'], function() {
-  return gulp.src([
-      './build/**/*'
-    ])
-    .pipe(file('CNAME', "openpogoui.nicontoso.eu"))
-    .pipe(gulp.dest('./build'))
-    .pipe(ghPages({remoteUrl: "https://github.com/OpenPoGo/OpenPoGoUI.git"}));
-});
+// gulp.task('deploy:production', ['build'], function() {
+//   return gulp.src([
+//       './build/**/*'
+//     ])
+//     .pipe(file('CNAME', "openpogoui.nicontoso.eu"))
+//     .pipe(gulp.dest('./build'))
+//     .pipe(ghPages({remoteUrl: "https://github.com/OpenPoGo/OpenPoGoUI.git"}));
+// });
 
 // Default
 
