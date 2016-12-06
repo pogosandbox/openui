@@ -182,11 +182,11 @@ function startListenToSocket() {
             }
         });
         var eggsInIncub = Array.from(msg.egg_incubators, i => i.pokemon_id);
-        var eggs = Array.from(msg.eggs.filter(e => eggsInIncub.indexOf(e.unique_id) < 0), i => {
+        var eggs = Array.from(msg.eggs.filter(e => eggsInIncub.indexOf(e.id) < 0), i => {
             return {
                 type: "egg",
-                totalDist: i.total_distance,
-                doneDist: i.walked_distance
+                totalDist: i.egg_km_walked_target,
+                doneDist: i.egg_km_walked_start
             }
         });
         global.map.displayEggsList(incubators.concat(eggs));
