@@ -150,22 +150,22 @@ function startListenToSocket() {
         var pkm = Array.from(msg.pokemon, p => {
             var pkmInfo = global.pokemonSettings[p.pokemon_id - 1] || {};
             return {
-                id: p.unique_id,
+                id: p.id,
                 pokemonId: p.pokemon_id,
-                inGym: p.deployed_fort_id != null,
+                inGym: p.deployed_fort_id != "",
                 canEvolve: pkmInfo.evolution_ids && pkmInfo.evolution_ids.length > 0,
-                cp: p.combat_power,
-                iv: (p.potential * 100).toFixed(1),
+                cp: p.cp,
+                iv: (100.0 * (p.individual_attack + p.individual_defense + p.individual_stamina)/45.0).toFixed(1),
                 lvl: inventory.getPokemonLevel(p),
                 name: p.nickname || inventory.getPokemonName(p.pokemon_id),
-                candy: msg.candy[pkmInfo.family_id] || 0,
+                candy: (msg.candy[pkmInfo.family_id] || {}).candy || 0,
                 candyToEvolve: pkmInfo.candy_to_evolve,
-                favorite: p.favorite == "True",
+                favorite: p.favorite == 1,
                 stats: {
-                    atk: p.attack,
-                    def: p.defense,
-                    hp: p.hp,
-                    maxHp: p.max_hp,
+                    atk: p.individual_attack,
+                    def: p.individual_defense,
+                    hp: p.individual_stamina,
+                    maxHp: p.stamina_max,
                     sta: p.stamina
                 }
             };
