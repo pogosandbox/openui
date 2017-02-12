@@ -42,7 +42,7 @@ function startListenToSocket() {
     socket.on('connect', () => {
         console.log("Connected to Bot");
         global.connected = true;
-        $(".loading").text("Waiting to get GPS coordinates from Bot...");
+        $(".loading").text("Waiting to get GPS coordinates from client...");
     });
     socket.on('disconnect', () => {
         global.connected = false;
@@ -114,8 +114,6 @@ function startListenToSocket() {
         var pkm = {
             id: pokemon.pokemon_id,
             name: inventory.getPokemonName(pokemon.pokemon_id),
-            cp: pokemon.combat_power,
-            iv: (pokemon.potential * 100).toFixed(1),
             lvl: inventory.getPokemonLevel(pokemon)
         };
         if (msg.position) {

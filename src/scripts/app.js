@@ -16,7 +16,7 @@
     function confirmAndSendToServer(msg, callback) {
         if (!global.config.noConfirm) {
             vex.dialog.confirm({
-                message: msg,
+                unsafeMessage: msg,
                 callback: (value) => { if(value) callback(); }
             });
         } else {

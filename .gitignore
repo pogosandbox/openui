@@ -6,3 +6,4 @@ certs
 build
 .publish
 src/assets/css/*.css
+debug.log
