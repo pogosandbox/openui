@@ -110,7 +110,9 @@ Map.prototype.initPath = function() {
 Map.prototype.initCatches = function() {
     for (var i = 0; i < this.catches.length; i++) {
         var pt = this.catches[i];
-        var icon = L.icon({ iconUrl: `./assets/pokemon/${pt.id}.png`, iconSize: [60, 60], iconAnchor: [30, 30]});
+        var pkmId = String(pt.id);
+        pkmId = '0'.repeat(3 - pkmId.length) + pkmId;
+        var icon = L.icon({ iconUrl: `./assets/pokemon/${pkmId}.png`, iconSize: [60, 60], iconAnchor: [30, 30]});
         var pkm = `${pt.name} <br /> Cp:${pt.cp} Iv:${pt.iv}%`;
         if (pt.lvl) {
             pkm = `${pt.name} (lvl ${pt.lvl}) <br /> Cp:${pt.cp} Iv:${pt.iv}%`;
@@ -168,7 +170,9 @@ Map.prototype.addCatch = function(pt) {
         this.layerCatches.clearLayers();
         this.initCatches();
     } else {
-        var icon = L.icon({ iconUrl: `./assets/pokemon/${pt.id}.png`, iconSize: [60, 60], iconAnchor: [30, 30] });
+        var pkmId = String(pt.id);
+        pkmId = '0'.repeat(3 - pkmId.length) + pkmId;
+        var icon = L.icon({ iconUrl: `./assets/pokemon/${pkmId}.png`, iconSize: [60, 60], iconAnchor: [30, 30] });
         L.marker([pt.lat, pt.lng], {icon: icon, zIndexOffset: 100 }).bindPopup(pkm).addTo(this.layerCatches);
     }
 }
@@ -304,7 +308,7 @@ Map.prototype.displayPokemonList = function(all, sortBy, eggs) {
         var candyStyle = elt.canEvolve ? "" : "style='display:none'";
         var fav = elt.favorite ? "set" : "unset";
         var pkmId = String(elt.pokemonId);
-        pkmId = '0'.repeat(3 - pkmId.length) + pkmId; 
+        pkmId = '0'.repeat(3 - pkmId.length) + pkmId;
         div.append(`
             <div class="pokemon">
                 <div class="transfer" data-id='${elt.id}'>
