@@ -303,6 +303,8 @@ Map.prototype.displayPokemonList = function(all, sortBy, eggs) {
         var transferClass = elt.favorite ? "hide" : "";
         var candyStyle = elt.canEvolve ? "" : "style='display:none'";
         var fav = elt.favorite ? "set" : "unset";
+        var pkmId = String(elt.pokemonId);
+        pkmId = '0'.repeat(3 - pkmId.length) + pkmId; 
         div.append(`
             <div class="pokemon">
                 <div class="transfer" data-id='${elt.id}'>
@@ -310,7 +312,7 @@ Map.prototype.displayPokemonList = function(all, sortBy, eggs) {
                     <a title='Transfer' href="#" class="transferAction ${transferClass}"><img src="./assets/img/recyclebin.png" /></a>
                     <a title='Evolve' href="#" class="evolveAction ${evolveStyle}"><img src="./assets/img/evolve.png" /></a>
                 </div>
-                <span class="imgspan ${evolveClass}"><img src="./assets/pokemon/${elt.pokemonId}.png" /></span>
+                <span class="imgspan ${evolveClass}"><img src="./assets/pokemon/${pkmId}.png" /></span>
                 <span class="name">${elt.name} lvl ${elt.lvl}</span>
                 <span class="info">CP: <strong>${elt.cp}</strong> IV: <strong>${elt.iv}%</strong></span>
                 <span class="info hide-on-small-only">ATK: <strong>${elt.stats.atk}</strong> DEF: <strong>${elt.stats.def}</strong> STA: <strong>${elt.stats.sta}</strong></span>

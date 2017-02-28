@@ -71,15 +71,6 @@ gulp.task('deploy', ['build'], function() {
     .pipe(ghPages({remoteUrl: "https://github.com/pogosandbox/openui.git"}));
 });
 
-// gulp.task('deploy:production', ['build'], function() {
-//   return gulp.src([
-//       './build/**/*'
-//     ])
-//     .pipe(file('CNAME', "openpogoui.nicontoso.eu"))
-//     .pipe(gulp.dest('./build'))
-//     .pipe(ghPages({remoteUrl: "https://github.com/OpenPoGo/OpenPoGoUI.git"}));
-// });
-
 // Default
 
 gulp.task('default', [ 'dev-styles', 'build' ]);
