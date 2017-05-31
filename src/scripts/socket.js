@@ -114,7 +114,9 @@ function startListenToSocket() {
         var pkm = {
             id: pokemon.pokemon_id,
             name: inventory.getPokemonName(pokemon.pokemon_id),
-            lvl: inventory.getPokemonLevel(pokemon)
+            lvl: inventory.getPokemonLevel(pokemon),
+            cp: pokemon.cp,
+            iv: pokemon.iv,
         };
         if (msg.position) {
             pkm.lat = msg.position.lat;

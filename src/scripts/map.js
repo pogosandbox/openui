@@ -158,7 +158,7 @@ Map.prototype.addCatch = function(pt) {
 
     var pkm = `${pt.name}<br /> CP:${pt.cp} IV:${pt.iv}%`;
     if (pt.lvl) {
-        pkm = `${pt.name} (lvl ${pt.lvl}) <br /> Cp:${pt.cp} Iv:${pt.iv}%`;
+        pkm = `${pt.name} (lvl ${pt.lvl}) <br /> CP:${pt.cp} IV:${pt.iv}%`;
     }
 
     this.catches.push(pt);
