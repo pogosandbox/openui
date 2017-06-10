@@ -14,13 +14,13 @@
     document.title += " - " + global.version;
 
     function confirmAndSendToServer(msg, callback) {
-        if (!global.config.noConfirm) {
+        if (global.config.noConfirm) {
+            callback();
+        } else {
             vex.dialog.confirm({
                 unsafeMessage: msg,
-                callback: (value) => { if(value) callback(); }
+                callback: value => { if(value) callback(); }
             });
-        } else {
-            callback();
         }
     }
 
@@ -92,7 +92,8 @@
             window.location = "config.html";
         });
 
-        $(".inventory .data").on("click", "a.transferAction", function() {
+        $(".inventory .data").on("click", "a.transferAction", function(event) {
+            event.preventDefault()
             var parent = $(this).parent();
             var id = parent.data().id;
             var idx = global.map.pokemonList.findIndex(p => p.id == id);
@@ -108,7 +109,8 @@
             });
         });
 
-        $(".inventory .data").on("click", "a.evolveAction", function() {
+        $(".inventory .data").on("click", "a.evolveAction", function(event) {
+            event.preventDefault()
             var parent = $(this).parent();
             var id = parent.data().id;
             var idx = global.map.pokemonList.findIndex(p => p.id == id);
@@ -124,7 +126,8 @@
             });
         });
         
-        $(".inventory .data").on("click", "a.favoriteAction", function() {
+        $(".inventory .data").on("click", "a.favoriteAction", function(event) {
+            event.preventDefault()
             var parent = $(this).parent();
             var id = parent.data().id;
             var idx = global.map.pokemonList.findIndex(p => p.id == id);
@@ -137,21 +140,21 @@
             global.ws.emit("favorite_pokemon", { id: id, favorite: selected.favorite });
         });
 
-        $(".inventory .data").on("click", "a.dropItemAction", function() {
+        $(".inventory .data").on("click", "a.dropItemAction", function(event) {
+            event.preventDefault();
             var parent = $(this).parent();
             var itemId = parent.data().id;
             var name = inventoryService.getItemName(itemId)
             var count = parent.data().count;
-            var msg = `How many <b>${name}</b> would you like to drop?`;
             vex.dialog.confirm({
-                message: msg,
+                unsafeMessage: `How many <b>${name}</b> would you like to drop?`,
                 input: `
                     <p class="range-field">
                         <input type="range" name="count" value="1" min="1" max="${count}" onchange="$('#display-range').text(this.value)" />
                     </p>
                     Drop: <span id='display-range'>1</span>
                 `,
-                callback: (value) => {
+                callback: value => {
                     if(value) {
                         var drop = parseInt(value.count);
                         ga("send", "event", "drop_items", name);

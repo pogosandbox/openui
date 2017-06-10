@@ -82,8 +82,8 @@ function startListenToSocket() {
         }
     });
     socket.on('pokestops', pokestops => {
-        console.log("Pokestops");
-        console.log(pokestops);
+        // console.log("Pokestops");
+        // console.log(pokestops);
         var forts = Array.from(pokestops, f => {
             // if (f.lure_info) console.log(f.lure_info);
             return {
