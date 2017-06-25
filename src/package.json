@@ -5,11 +5,11 @@
   "author": "Nicolas Schmitt",
   "dependencies": {
     "leaflet": "1.0.3",
-    "materialize-css": "0.98",
+    "materialize-css": "0.99",
     "vex-js": "3.1.0",
-    "leaflet.markercluster": "1.0.4",
-    "socket.io": "2.0.2",
-    "jquery": "3.2.0",
-    "moment": "2.18.0"
+    "leaflet.markercluster": "1.0.6",
+    "socket.io": "2.0.3",
+    "jquery": "3.2.1",
+    "moment": "2.18.1"
   }
 }

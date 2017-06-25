@@ -155,6 +155,7 @@ function startListenToSocket() {
                 id: p.id,
                 pokemonId: p.pokemon_id,
                 inGym: p.deployed_fort_id != "",
+                isBad: p.is_bad,
                 canEvolve: pkmInfo.evolution_ids && pkmInfo.evolution_ids.length > 0,
                 cp: p.cp,
                 iv: (100.0 * (p.individual_attack + p.individual_defense + p.individual_stamina)/45.0).toFixed(1),
@@ -223,8 +224,12 @@ function pokemonToast(pkm, options) {
     var pkminfo = pkm.name;
     if (pkm.lvl) pkminfo += ` (lvl ${pkm.lvl})`;
 
+    let padId = pkm.id.toString();
+    if(padId.length == 1) padId = '00' + padId;
+    if(padId.length == 2) padId = '0' + padId;
+
     var content = `<div>${pkminfo}</div><div>`;
-    content += `<img src='./assets/pokemon/${pkm.id}.png' height='50' />`;
+    content += `<img src='./assets/pokemon/${padId}.png' height='50' />`;
     if (options.ball) content += `<img src='./assets/inventory/${options.ball}.png' height='30' />`;
     content += `</div>`;
     toast(content, title, {
