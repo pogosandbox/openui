@@ -58,7 +58,7 @@ if (process.env.FAKE_BOT_ENABLED == "true") {
                 pokemon: [
                     { 
                         id: '1234', pokemon_id: 10, cp: 1000, potential: 0.5,
-                        cp_multiplier: 0.094, additional_cp_multiplier: 0, id_bad: true,
+                        cp_multiplier: 0.094, additional_cp_multiplier: 0, is_bad: true,
                         individual_attack: 10, individual_defense: 10, individual_stamina: 5, stamina_max: 50, stamina: 10, favorite: 0
                     },
                     { 

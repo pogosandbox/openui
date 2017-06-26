@@ -310,7 +310,7 @@ Map.prototype.displayPokemonList = function(all, sortBy, eggs) {
         var pkmId = String(elt.pokemonId);
         pkmId = '0'.repeat(3 - pkmId.length) + pkmId;
         div.append(`
-            <div class="pokemon">
+            <div class="pokemon ${elt.isBad ? 'bad': ''}">
                 <div class="transfer" data-id='${elt.id}'>
                     <a title='(Un)Favorite' href="#" class="favoriteAction"><img src="./assets/img/favorite_${fav}.png" /></a>
                     <a title='Transfer' href="#" class="transferAction ${transferClass}"><img src="./assets/img/recyclebin.png" /></a>

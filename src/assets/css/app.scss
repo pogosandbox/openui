@@ -262,6 +262,10 @@ body, html, .content {
 .pokemon {
     @extend .item;
 
+    &.bad {
+        background-color: $red;
+    }
+
     &:hover .imgspan.canEvolve:after {
         opacity: 0.3;
     }
